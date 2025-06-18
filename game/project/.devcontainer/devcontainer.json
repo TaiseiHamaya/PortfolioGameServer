@@ -1,0 +1,20 @@
+{
+  "name": "rust-server-dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "dustypomerleau.rust-syntax",
+        "rust-lang.rust-analyzer"
+      ]
+    }
+  },
+  "remoteUser": "root",
+  "workspaceFolder": "/workspaces/project"
+}
