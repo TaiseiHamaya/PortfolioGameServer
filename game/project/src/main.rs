@@ -1,3 +1,6 @@
+mod game;
+mod entity;
+
 fn main() {
-    println!("Hello, world!");
+    game::framework::run();
 }
