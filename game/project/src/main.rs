@@ -1,6 +1,7 @@
 mod game;
 mod entity;
 
-fn main() {
-    game::framework::run();
+#[tokio::main]
+async fn main() {
+    game::framework::run().await;
 }
