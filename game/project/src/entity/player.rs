@@ -1,6 +1,4 @@
 use nalgebra::Point3;
-use tokio::net::TcpStream;
-use tokio::stream;
 
 use super::entity::Entity;
 use super::entity_id::EntityId;
@@ -9,12 +7,19 @@ pub struct Player {
     id: EntityId,
     position: Point3<f32>,
     radius: f32,
-
-    stream: TcpStream,
+    hitpoint: i32,
 }
 
 impl Entity for Player {
     fn update(&mut self) {
+    }
+
+    fn on_damaged(&mut self, damage: i32) -> () {
+        self.hitpoint -= damage;
+        if self.hitpoint < 0 {
+            self.hitpoint = 0;
+            return;
+        }
     }
 
     fn position(&self) -> Point3<f32> {
@@ -29,13 +34,12 @@ impl Entity for Player {
 }
 
 impl Player {
-    pub fn new(id: u64, stream: TcpStream, position: Point3<f32>) -> Self {
+    pub fn new(id: u64, position: Point3<f32>, hitpoint: i32) -> Self {
         Player {
             id: EntityId::new(id),
             position,
             radius: 1.0,
-
-            stream,
+            hitpoint,
         }
     }
 }

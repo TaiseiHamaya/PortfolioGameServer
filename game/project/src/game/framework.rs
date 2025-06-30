@@ -4,7 +4,7 @@ use super::zone::Zone;
 
 pub async fn run() {
     // 初期化
-    let tcp_listener = TcpListener::bind("127.0.0.1:3215").await;
+    let tcp_listener = TcpListener::bind("0.0.0.0:3215").await;
     if tcp_listener.is_err() {
         eprintln!("Error binding TCP listener: {}", tcp_listener.unwrap_err());
         return;
@@ -12,10 +12,10 @@ pub async fn run() {
     let mut zone = Zone::new("TestZone".to_string(), tcp_listener.unwrap());
 
     loop {
-        // proxy受信
+        // 受信処理
+        zone.join_client().await;
         zone.recv_all().await;
 
-        // proxy内にプログラム終了処理がある場合にbreak
         if false {
             break;
         }
@@ -23,7 +23,8 @@ pub async fn run() {
         // 更新
         zone.update().await;
 
-        // proxy送信
+        // 送信処理
+        zone.send_all().await;
     }
 
     // 終了処理
