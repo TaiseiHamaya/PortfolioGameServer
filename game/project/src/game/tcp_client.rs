@@ -1,11 +1,18 @@
 use std::{
+    collections::LinkedList,
     fmt::Error,
     io::{IoSlice, IoSliceMut},
     net::SocketAddr,
     sync::Arc,
 };
 
-use tokio::{net::TcpStream, sync::Mutex};
+use tokio::{
+    net::{
+        TcpStream,
+        tcp::{OwnedReadHalf, OwnedWriteHalf},
+    },
+    sync::Mutex,
+};
 
 pub enum ClientRecvBuffer {
     Message(String),
@@ -56,85 +63,100 @@ impl ClientSendBuffer {
             ClientSendBuffer::Disconnect => "".as_bytes().to_vec(),
         }
     }
+
+    fn buffer_len(&self) -> usize {
+        match self {
+            ClientSendBuffer::Message(msg) => 8 + msg.len(), // 4 bytes for type + 4 bytes for length + message length
+            ClientSendBuffer::Disconnect => 0,               // Disconnect has no data
+        }
+    }
 }
 
 pub struct TcpClient {
-    stream: Arc<Mutex<TcpStream>>,
+    recv_stream: OwnedReadHalf,
+    send_stream: OwnedWriteHalf,
     addr: SocketAddr,
 
-    recv_message_buffers: Vec<ClientRecvBuffer>,
-    send_message_buffers: Vec<ClientSendBuffer>,
+    recv_messages: Vec<ClientRecvBuffer>,
+    send_messages: LinkedList<ClientSendBuffer>,
 
     error_counter: Arc<Mutex<u32>>,
 }
 
 impl TcpClient {
     pub fn new(stream: TcpStream, addr: SocketAddr) -> Self {
+        let (read_half, write_half) = stream.into_split();
+
         TcpClient {
-            stream: Arc::new(Mutex::new(stream)),
+            recv_stream: read_half,
+            send_stream: write_half,
             addr,
-            recv_message_buffers: Vec::new(),
-            send_message_buffers: Vec::new(),
+            recv_messages: Vec::new(),
+            send_messages: LinkedList::new(),
             error_counter: Arc::new(Mutex::new(0)),
         }
     }
 
     pub fn message(&mut self, message: String) {
-        self.send_message_buffers
-            .push(ClientSendBuffer::Message(message));
+        self.send_messages
+            .push_back(ClientSendBuffer::Message(message));
     }
 
     pub fn send(&mut self) {
-        let stream_temp = Arc::clone(&self.stream);
         let error_counter = Arc::clone(&self.error_counter);
-        let mut send_messages: Vec<ClientSendBuffer> = Vec::new();
-        std::mem::swap(&mut send_messages, &mut self.send_message_buffers);
-        tokio::spawn(async move {
-            // streamのlock
-            let locked_stream = stream_temp.lock().await;
-            // 書き込み可能チェック
-            if locked_stream.writable().await.is_err() {
-                println!("Stream is not writable");
-                let mut error_count = error_counter.lock().await;
-                *error_count += 1;
-                return;
-            }
-            // IoSliceは所有権を持たないので、Vec配列で保持
-            let mut send_buffers = Vec::new();
-            send_buffers.reserve(send_messages.len());
-            for send_message in send_messages {
-                let buffer = send_message.to_stream_write();
-                send_buffers.push(buffer); // push時に置換が行われる可能性
-            }
-            let mut sliced_send_buffers = Vec::new();
-            sliced_send_buffers.reserve(send_buffers.len());
-            // バッファに詰める
-            for buffer in send_buffers.iter_mut() {
-                sliced_send_buffers.push(IoSlice::new(&buffer.as_slice()));
-            }
-            let result = locked_stream.try_write_vectored(&sliced_send_buffers.as_slice());
-            match result {
-                Ok(_) => {
-                    println!("Sent messages successfully");
-                    let mut error_count = error_counter.lock().await;
-                    *error_count = 0; // Reset error count on successful send
-                }
-                Err(e) => {
-                    println!("Failed to send messages: {:?}", e);
-                    let mut error_count = error_counter.lock().await;
-                    *error_count += 1;
-                }
-            }
+        // 送信内容を移動
+        // ---------- 送信用Bufferの生成 ----------
+        // IoSliceは所有権を持たないので、Vec配列で一時的に保持
+        let mut send_buffers_owner = Vec::new();
+        send_buffers_owner.reserve(self.send_messages.len());
+        self.send_messages.iter().for_each(|send_message| {
+            let buffer = send_message.to_stream_write();
+            send_buffers_owner.push(buffer); // push時に置換が行われる可能性
         });
+        let mut sliced_send_buffers = Vec::new();
+        sliced_send_buffers.reserve(send_buffers_owner.len());
+        // 送信用にsend_buffersをIoSliceに変換
+        send_buffers_owner.iter().for_each(|buffer| {
+            let slice = IoSlice::new(buffer.as_slice());
+            sliced_send_buffers.push(slice);
+        });
+        // ---------- 送信処理 ----------
+        // streamのlock
+        //let result = locked_stream.try_write_vectored(&sliced_send_buffers.as_slice());
+        let result = self.send_stream.try_write_vectored(&sliced_send_buffers);
+
+        // ---------- 送信処理 ----------
+        match result {
+            Ok(size) => {
+                println!("Sent messages successfully");
+                let mut error_count = error_counter.blocking_lock();
+                *error_count = 0; // Reset error count on successful send
+                let total_length: usize =
+                    self.send_messages.iter().map(|msg| msg.buffer_len()).sum();
+                if size < total_length {
+                    println!(
+                        "Warning: Not all messages were sent. Sent {} bytes, expected {}",
+                        size, total_length
+                    );
+                } else {
+                    self.send_messages.clear(); // Clear messages after successful send
+                }
+            }
+            Err(e) => {
+                println!("Failed to send messages: {:?}", e);
+                let mut error_count = error_counter.blocking_lock();
+                *error_count += 1;
+            }
+        }
     }
 
     pub fn recv(&mut self) {
-        let locked_stream = self.stream.blocking_lock();
+        // ----------  ----------
         let mut buffer = Vec::new();
-        match locked_stream.try_read_vectored(&mut buffer) {
+        match self.recv_stream.try_read_vectored(&mut buffer) {
             Ok(0) => {
                 println!("Connection closed by peer");
-                self.recv_message_buffers.push(ClientRecvBuffer::Close);
+                self.recv_messages.push(ClientRecvBuffer::Close);
             }
             Ok(_) => {
                 buffer.iter().for_each(|recv| {
@@ -144,7 +166,7 @@ impl TcpClient {
                         return;
                     }
                     let recv_data = recv_data.unwrap();
-                    self.recv_message_buffers.push(recv_data);
+                    self.recv_messages.push(recv_data);
                 });
             }
             Err(e) => {
@@ -163,6 +185,6 @@ impl TcpClient {
     }
 
     pub fn disconnect(&mut self) {
-        self.send_message_buffers.push(ClientSendBuffer::Disconnect);
+        self.send_messages.push_back(ClientSendBuffer::Disconnect);
     }
 }
