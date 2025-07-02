@@ -46,7 +46,7 @@ impl ClientRecvBuffer {
     }
 }
 
-enum ClientSendBuffer {
+pub enum ClientSendBuffer {
     Message(String),
     Disconnect,
 }
@@ -128,9 +128,12 @@ impl TcpClient {
         // ---------- 送信処理 ----------
         match result {
             Ok(size) => {
-                println!("Sent messages successfully");
-                let mut error_count = error_counter.blocking_lock();
-                *error_count = 0; // Reset error count on successful send
+                let error_count = error_counter.try_lock();
+                if error_count.is_err() {
+                    println!("Failed to lock error counter: {:?}", error_count.err());
+                    return; // Exit if we can't lock the error counter
+                }
+                *error_count.unwrap() = 0; // Reset error count on successful send
                 let total_length: usize =
                     self.send_messages.iter().map(|msg| msg.buffer_len()).sum();
                 if size < total_length {
@@ -138,14 +141,19 @@ impl TcpClient {
                         "Warning: Not all messages were sent. Sent {} bytes, expected {}",
                         size, total_length
                     );
+                    self.send_messages.clear();
                 } else {
                     self.send_messages.clear(); // Clear messages after successful send
                 }
             }
             Err(e) => {
                 println!("Failed to send messages: {:?}", e);
-                let mut error_count = error_counter.blocking_lock();
-                *error_count += 1;
+                let error_count = error_counter.try_lock();
+                if error_count.is_err() {
+                    println!("Failed to lock error counter: {:?}", error_count.err());
+                    return; // Exit if we can't lock the error counter
+                }
+                *error_count.unwrap() += 1;
             }
         }
     }
@@ -176,12 +184,20 @@ impl TcpClient {
     }
 
     pub fn check_error(&self) -> bool {
-        let error_count = self.error_counter.blocking_lock();
-        if *error_count > 100 {
+        let error_count = self.error_counter.try_lock();
+        if error_count.is_err() {
+            println!("Failed to lock error counter: {:?}", error_count.err());
+            return false; // Indicate that the connection should remain open
+        }
+        if *error_count.unwrap() > 100 {
             println!("Too many errors, closing connection");
             return true; // Indicate that the connection should be closed
         }
         false // No error, keep the connection open
+    }
+
+    pub fn get_recv_messages(&self) -> &Vec<ClientRecvBuffer> {
+        &self.recv_messages
     }
 
     pub fn disconnect(&mut self) {

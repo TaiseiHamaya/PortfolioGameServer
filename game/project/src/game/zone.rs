@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::future::poll_fn;
-use std::task::Poll;
+use std::task::{Context, Poll};
+use futures::task::noop_waker;
 
 use tokio::net::TcpListener;
 
@@ -36,7 +36,9 @@ impl Zone {
     }
 
     pub async fn join_client(&mut self) {
-        poll_fn(|context| match self.tcp_listener.poll_accept(context) {
+        let waker = futures::task::noop_waker();
+        let mut cx = Context::from_waker(&waker);
+        match self.tcp_listener.poll_accept(&mut cx) {
             Poll::Ready(Ok((stream, addr))) => {
                 // 後でDB接続に変える
                 println!("Accepted connection from {}", addr);
@@ -61,15 +63,12 @@ impl Zone {
                             client.message(message);
                         }
                     });
-                Poll::Ready(())
             }
             Poll::Ready(Err(e)) => {
                 eprintln!("Accept error: {} (Zone: {})", e, self.name);
-                Poll::Ready(())
             }
-            Poll::Pending => Poll::Pending,
-        })
-        .await;
+            Poll::Pending => {}
+        }
     }
 
     pub async fn recv_all(&mut self) {
@@ -79,6 +78,20 @@ impl Zone {
     }
 
     pub async fn update(&mut self) {
+        self.player_tcp_streams.iter().for_each(|(player_id, client)| {
+            client.get_recv_messages().iter().for_each(|message| {
+                match message {
+                    // メッセージを受信した場合
+                    crate::game::tcp_client::ClientRecvBuffer::Message(msg) => {
+                        
+                    }
+                    // 切断要求が来た場合
+                    crate::game::tcp_client::ClientRecvBuffer::Close => {
+                    }
+                }
+            });
+        });
+
         // update player
         self.players.iter_mut().for_each(|(_, player)| {
             player.update();
@@ -141,15 +154,16 @@ impl Zone {
 
     // クライアントから切断要求が来たとき
     fn quit_client(&mut self, player_id: u64) {
+        println!("Player {} has quit the game", player_id);
         self.players.remove(&player_id);
-        let removed_stram = self.player_tcp_streams.remove(&player_id);
-        if removed_stram.is_none() {
+        let removed_stream = self.player_tcp_streams.remove(&player_id);
+        if removed_stream.is_none() {
             return;
         }
 
-        let mut removed_stream = removed_stram.unwrap();
+        let mut removed_stream = removed_stream.unwrap();
         tokio::spawn(async move {
-            // DB保存処理    
+            // DB保存処理
         });
     }
 }
