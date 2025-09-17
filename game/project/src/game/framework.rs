@@ -1,10 +1,11 @@
+use std::net::Ipv4Addr;
 use tokio::net::TcpListener;
 
 use super::zone::Zone;
 
 pub async fn run() {
     // 初期化
-    let tcp_listener = TcpListener::bind("0.0.0.0:3215").await;
+    let tcp_listener = TcpListener::bind((Ipv4Addr::UNSPECIFIED, 3215)).await;
     if tcp_listener.is_err() {
         eprintln!("Error binding TCP listener: {}", tcp_listener.unwrap_err());
         return;
