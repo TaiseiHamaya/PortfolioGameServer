@@ -1,84 +1,28 @@
 use std::{
     collections::LinkedList,
     fmt::Error,
-    io::{IoSlice, IoSliceMut},
+    io::{ErrorKind, IoSlice},
     net::SocketAddr,
+    result,
     sync::Arc,
 };
 
+use protobuf::{ClearAndParse, MergeFrom, Serialize};
 use tokio::{
     net::{
-        TcpStream,
-        tcp::{OwnedReadHalf, OwnedWriteHalf},
-    },
-    sync::Mutex,
+        tcp::{OwnedReadHalf, OwnedWriteHalf}, TcpStream
+    }, runtime::Handle, sync::Mutex
 };
 
-pub enum ClientRecvBuffer {
-    Message(String),
-    Close,
-}
-
-impl ClientRecvBuffer {
-    pub fn generate(buffer: &IoSliceMut) -> Result<ClientRecvBuffer, Error> {
-        if buffer.is_empty() {
-            return Ok(ClientRecvBuffer::Close);
-        }
-
-        match buffer[0..4].try_into().map(u32::from_le_bytes).ok() {
-            Some(1) => {
-                let lenght_bytes = buffer[4..8].try_into();
-                if lenght_bytes.is_err() {
-                    return Err(Error);
-                }
-                let message_length = u32::from_be_bytes(lenght_bytes.unwrap()) as usize;
-
-                Ok(ClientRecvBuffer::Message(
-                    buffer[8..8 + message_length]
-                        .iter()
-                        .map(|c| *c as char)
-                        .collect(),
-                ))
-            }
-            Some(_) => Err(Error),
-            None => Err(Error),
-        }
-    }
-}
-
-pub enum ClientSendBuffer {
-    Message(String),
-    Disconnect,
-}
-
-impl ClientSendBuffer {
-    fn to_stream_write(&self) -> Vec<u8> {
-        match self {
-            ClientSendBuffer::Message(msg) => {
-                let mut buffer = Vec::new();
-                buffer.extend(1u32.to_le_bytes());
-                buffer.extend(msg.len().to_be_bytes().to_vec());
-                buffer
-            }
-            ClientSendBuffer::Disconnect => "".as_bytes().to_vec(),
-        }
-    }
-
-    fn buffer_len(&self) -> usize {
-        match self {
-            ClientSendBuffer::Message(msg) => 8 + msg.len(), // 4 bytes for type + 4 bytes for length + message length
-            ClientSendBuffer::Disconnect => 0,               // Disconnect has no data
-        }
-    }
-}
+use crate::proto::Packet;
 
 pub struct TcpClient {
     recv_stream: OwnedReadHalf,
     send_stream: OwnedWriteHalf,
     addr: SocketAddr,
 
-    recv_messages: Vec<ClientRecvBuffer>,
-    send_messages: LinkedList<ClientSendBuffer>,
+    recv_messages: Vec<crate::proto::Packet>,
+    send_messages: LinkedList<crate::proto::Packet>,
 
     error_counter: Arc<Mutex<u32>>,
 }
@@ -97,84 +41,87 @@ impl TcpClient {
         }
     }
 
-    pub fn message(&mut self, message: String) {
-        self.send_messages
-            .push_back(ClientSendBuffer::Message(message));
+    pub fn stack_packet(&mut self, packet: crate::proto::Packet) {
+        self.send_messages.push_back(packet);
     }
 
     pub fn send(&mut self) {
         let error_counter = Arc::clone(&self.error_counter);
         // 送信内容を移動
         // ---------- 送信用Bufferの生成 ----------
-        // IoSliceは所有権を持たないので、Vec配列で一時的に保持
-        let mut send_buffers_owner = Vec::new();
-        send_buffers_owner.reserve(self.send_messages.len());
-        self.send_messages.iter().for_each(|send_message| {
-            let buffer = send_message.to_stream_write();
-            send_buffers_owner.push(buffer); // push時に置換が行われる可能性
-        });
-        let mut sliced_send_buffers = Vec::new();
-        sliced_send_buffers.reserve(send_buffers_owner.len());
-        // 送信用にsend_buffersをIoSliceに変換
-        send_buffers_owner.iter().for_each(|buffer| {
-            let slice = IoSlice::new(buffer.as_slice());
-            sliced_send_buffers.push(slice);
-        });
+        let mut temp_send_buffers: LinkedList<Vec<u8>> = LinkedList::new();
+        for msg in &self.send_messages {
+            let buffer = msg.serialize();
+            if buffer.is_err() {
+                println!("Failed to serialize message: {:?}", buffer.err());
+                continue;
+            }
+            let buffer = buffer.unwrap();
+            temp_send_buffers.push_back(buffer);
+        }
+        let mut sliced_send_buffers: Vec<IoSlice> = Vec::new();
+        if temp_send_buffers.is_empty() {
+            return; // 送信するものがない場合は終了
+        }
+
+        for buffer in &temp_send_buffers {
+            sliced_send_buffers.push(IoSlice::new(&buffer));
+        }
+
         // ---------- 送信処理 ----------
         // streamのlock
         //let result = locked_stream.try_write_vectored(&sliced_send_buffers.as_slice());
         let result = self.send_stream.try_write_vectored(&sliced_send_buffers);
 
-        // ---------- 送信処理 ----------
+        // ---------- エラーハンドリング ----------
         match result {
-            Ok(size) => {
+            Ok(_) => {
                 let error_count = error_counter.try_lock();
                 if error_count.is_err() {
                     println!("Failed to lock error counter: {:?}", error_count.err());
-                    return; // Exit if we can't lock the error counter
+                    return;
                 }
-                *error_count.unwrap() = 0; // Reset error count on successful send
-                let total_length: usize =
-                    self.send_messages.iter().map(|msg| msg.buffer_len()).sum();
-                if size < total_length {
-                    println!(
-                        "Warning: Not all messages were sent. Sent {} bytes, expected {}",
-                        size, total_length
-                    );
-                    self.send_messages.clear();
-                } else {
-                    self.send_messages.clear(); // Clear messages after successful send
-                }
+                *error_count.unwrap() = 0; // エラーカウンタをリセット
             }
             Err(e) => {
-                println!("Failed to send messages: {:?}", e);
-                let error_count = error_counter.try_lock();
-                if error_count.is_err() {
-                    println!("Failed to lock error counter: {:?}", error_count.err());
-                    return; // Exit if we can't lock the error counter
+                match e.kind() {
+                    ErrorKind::WriteZero => {}
+                    _ => {
+                        println!("Failed to send messages: {:?}", e);
+                        let error_count = error_counter.try_lock();
+                        if error_count.is_err() {
+                            println!("Failed to lock error counter: {:?}", error_count.err());
+                            return; // Exit if we can't lock the error counter
+                        }
+                        *error_count.unwrap() += 1;
+                    }
                 }
-                *error_count.unwrap() += 1;
             }
         }
     }
 
-    pub fn recv(&mut self) {
-        // ----------  ----------
+    pub async fn recv(&mut self) {
+        // 受信チェック
+        if self.recv_stream.readable().await.is_err() {
+            return;
+        }
+        // ---------- 受信処理 ----------
         let mut buffer = Vec::new();
         match self.recv_stream.try_read_vectored(&mut buffer) {
             Ok(0) => {
+                // 接続終了
                 println!("Connection closed by peer");
-                self.recv_messages.push(ClientRecvBuffer::Close);
             }
             Ok(_) => {
-                buffer.iter().for_each(|recv| {
-                    let recv_data = ClientRecvBuffer::generate(recv);
-                    if recv_data.is_err() {
-                        println!("Failed to parse received data: {:?}", recv_data.err());
+                // 通常パケット
+                buffer.iter().for_each(|recv: &std::io::IoSliceMut<'_>| {
+                    let mut packet = crate::proto::Packet::new();
+                    let result = packet.clear_and_parse(recv);
+                    if result.is_err() {
+                        println!("Failed to parse packet: {:?}", result.err());
                         return;
                     }
-                    let recv_data = recv_data.unwrap();
-                    self.recv_messages.push(recv_data);
+                    self.recv_messages.push(packet);
                 });
             }
             Err(e) => {
@@ -196,11 +143,13 @@ impl TcpClient {
         false // No error, keep the connection open
     }
 
-    pub fn get_recv_messages(&self) -> &Vec<ClientRecvBuffer> {
+    pub fn get_recv_messages(&self) -> &Vec<crate::proto::Packet> {
         &self.recv_messages
     }
 
     pub fn disconnect(&mut self) {
-        self.send_messages.push_back(ClientSendBuffer::Disconnect);
+        // 強制disconnect
+        // protobufでの実装忘れ
+        //self.send_messages.push_back(ClientSendBuffer::Disconnect);
     }
 }

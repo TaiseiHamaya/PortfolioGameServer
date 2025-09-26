@@ -22,8 +22,11 @@ impl Entity for Player {
         }
     }
 
-    fn position(&self) -> Point3<f32> {
-        self.position
+    fn position(&self) -> &Point3<f32> {
+        &self.position
+    }
+    fn position_mut(&mut self) -> &mut Point3<f32> {
+        &mut self.position
     }
     fn radius(&self) -> f32 {
         self.radius
