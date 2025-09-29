@@ -1,15 +1,15 @@
 use crate::proto;
 use protobuf::ClearAndParse;
 
-pub struct ReciveBuffer {
+pub struct ReceiveBuffer {
     recived_size_byte: u32,
     size: u32,
     body: Vec<u8>,
 }
 
-impl ReciveBuffer {
+impl ReceiveBuffer {
     pub fn new() -> Self {
-        ReciveBuffer {
+        ReceiveBuffer {
             recived_size_byte: 0,
             size: 0,
             body: Vec::new(),

@@ -14,7 +14,7 @@ use tokio::{
     sync::Mutex,
 };
 
-use super::recive_buffer;
+use super::receive_buffer;
 
 pub struct TcpClient {
     recv_stream: OwnedReadHalf,
@@ -24,7 +24,7 @@ pub struct TcpClient {
     recv_messages: Vec<crate::proto::Packet>,
     send_messages: LinkedList<crate::proto::Packet>,
 
-    recv_buffer: recive_buffer::ReciveBuffer,
+    recv_buffer: receive_buffer::ReceiveBuffer,
     error_counter: Arc<Mutex<u32>>,
 }
 
@@ -38,7 +38,7 @@ impl TcpClient {
             addr,
             recv_messages: Vec::new(),
             send_messages: LinkedList::new(),
-            recv_buffer: recive_buffer::ReciveBuffer::new(),
+            recv_buffer: receive_buffer::ReceiveBuffer::new(),
             error_counter: Arc::new(Mutex::new(0)),
         }
     }
