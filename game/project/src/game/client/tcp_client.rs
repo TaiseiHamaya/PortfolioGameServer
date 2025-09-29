@@ -14,6 +14,8 @@ use tokio::{
     sync::Mutex,
 };
 
+use super::recive_buffer;
+
 pub struct TcpClient {
     recv_stream: OwnedReadHalf,
     send_stream: OwnedWriteHalf,
@@ -22,6 +24,7 @@ pub struct TcpClient {
     recv_messages: Vec<crate::proto::Packet>,
     send_messages: LinkedList<crate::proto::Packet>,
 
+    recv_buffer: recive_buffer::ReciveBuffer,
     error_counter: Arc<Mutex<u32>>,
 }
 
@@ -35,6 +38,7 @@ impl TcpClient {
             addr,
             recv_messages: Vec::new(),
             send_messages: LinkedList::new(),
+            recv_buffer: recive_buffer::ReciveBuffer::new(),
             error_counter: Arc::new(Mutex::new(0)),
         }
     }
@@ -55,6 +59,8 @@ impl TcpClient {
                 continue;
             }
             let buffer = buffer.unwrap();
+            let buffer_size = (buffer.len() as u32).to_le_bytes().to_vec();
+            temp_send_buffers.push_back(buffer_size);
             temp_send_buffers.push_back(buffer);
         }
         let mut sliced_send_buffers: Vec<IoSlice> = Vec::new();
@@ -67,8 +73,6 @@ impl TcpClient {
         }
 
         // ---------- 送信処理 ----------
-        // streamのlock
-        //let result = locked_stream.try_write_vectored(&sliced_send_buffers.as_slice());
         let result = self.send_stream.try_write_vectored(&sliced_send_buffers);
 
         // ---------- エラーハンドリング ----------
@@ -104,28 +108,23 @@ impl TcpClient {
             return;
         }
         // ---------- 受信処理 ----------
-        let mut buffer = Vec::new();
-        match self.recv_stream.try_read_vectored(&mut buffer) {
-            Ok(0) => {
-                // 接続終了
-                println!("Connection closed by peer");
-            }
-            Ok(_) => {
-                // 通常パケット
-                buffer.iter().for_each(|recv: &std::io::IoSliceMut<'_>| {
-                    let mut packet = crate::proto::Packet::new();
-                    let result = packet.clear_and_parse(recv);
-                    if result.is_err() {
-                        println!("Failed to parse packet: {:?}", result.err());
-                        return;
-                    }
-                    self.recv_messages.push(packet);
-                });
-            }
-            Err(e) => {
-                println!("Failed to read from stream: {:?}", e);
-            }
+        let mut temp_buffer = vec![0u8; 4096];
+        let result = self.recv_stream.try_read(&mut temp_buffer);
+        if result.is_err() {
+            println!("Failed to read from stream: {:?}", result.err());
+            return;
         }
+        let bytes_read = result.unwrap();
+        if bytes_read == 0 {
+            // 接続終了
+            println!("Connection closed by peer");
+            return;
+        }
+
+        // 受信したデータをバッファに追加
+        let mut packet_data = temp_buffer.drain(0..bytes_read).collect::<Vec<u8>>();
+        let packets = self.recv_buffer.read_stream(&mut packet_data);
+        self.recv_messages.extend(packets);
     }
 
     pub fn check_error(&self) -> bool {
