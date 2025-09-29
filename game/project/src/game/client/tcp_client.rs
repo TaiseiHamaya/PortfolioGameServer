@@ -1,20 +1,18 @@
 use std::{
     collections::LinkedList,
-    fmt::Error,
     io::{ErrorKind, IoSlice},
     net::SocketAddr,
-    result,
     sync::Arc,
 };
 
-use protobuf::{ClearAndParse, MergeFrom, Serialize};
+use protobuf::{ClearAndParse, Serialize};
 use tokio::{
     net::{
-        tcp::{OwnedReadHalf, OwnedWriteHalf}, TcpStream
-    }, runtime::Handle, sync::Mutex
+        TcpStream,
+        tcp::{OwnedReadHalf, OwnedWriteHalf},
+    },
+    sync::Mutex,
 };
-
-use crate::proto::Packet;
 
 pub struct TcpClient {
     recv_stream: OwnedReadHalf,
@@ -145,11 +143,5 @@ impl TcpClient {
 
     pub fn get_recv_messages(&self) -> &Vec<crate::proto::Packet> {
         &self.recv_messages
-    }
-
-    pub fn disconnect(&mut self) {
-        // 強制disconnect
-        // protobufでの実装忘れ
-        //self.send_messages.push_back(ClientSendBuffer::Disconnect);
     }
 }

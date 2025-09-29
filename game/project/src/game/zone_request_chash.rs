@@ -1,12 +1,10 @@
 use std::mem;
 
-use crate::entity::player::Player;
-
-use super::tcp_client::*;
+use crate::game::client;
 
 pub struct ZonePlayerLogin {
-    pub player: Player,
-    pub tcp_client: TcpClient,
+    pub id: u64,
+    pub clientCluster: client::Cluster,
 }
 pub struct ZonePlayerLogout {
     pub entity_id: u64,
@@ -30,8 +28,8 @@ impl ZoneRequestChash {
         self.logout_chash.clear();
     }
 
-    pub fn push_login(&mut self, player: Player, tcp: TcpClient) {
-        self.login_chash.push(ZonePlayerLogin { player, tcp_client: tcp });
+    pub fn push_login(&mut self, client: client::Cluster) {
+        self.login_chash.push(ZonePlayerLogin { id: client.id(), clientCluster: client });
     }
 
     pub fn push_logout(&mut self, id: u64) {

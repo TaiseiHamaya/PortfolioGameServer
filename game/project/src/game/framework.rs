@@ -13,19 +13,7 @@ pub async fn run() {
     let mut zone = Zone::new("TestZone".to_string(), tcp_listener.unwrap());
 
     loop {
-        // 受信処理
-        zone.join_client().await;
-        zone.recv_all().await;
-
-        if false {
-            break;
-        }
-
-        // 更新
         zone.update().await;
-
-        // 送信処理
-        zone.send_all().await;
     }
 
     // 終了処理

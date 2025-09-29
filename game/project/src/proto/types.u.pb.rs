@@ -163,7 +163,7 @@ impl<'msg> PacketView<'msg> {
       // i32->enum types, since even for closed enums we trust
       // upb to only return one of the named values).
       self.inner.ptr().get_i32_at_index(
-        1, (super::LoginPacketType::Loginrequest).into()
+        1, (super::LoginPacketType::Loginresult).into()
       ).try_into().unwrap()
     }
   }
@@ -214,26 +214,11 @@ impl<'msg> PacketView<'msg> {
     }
   }
 
-  // timestamp: optional uint64
-  pub fn timestamp(self) -> u64 {
-    unsafe {
-      // TODO: b/361751487: This .into() and .try_into() is only
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      // perfectly (and do an unchecked conversion for
-      // i32->enum types, since even for closed enums we trust
-      // upb to only return one of the named values).
-      self.inner.ptr().get_u64_at_index(
-        4, (0u64).into()
-      ).try_into().unwrap()
-    }
-  }
-
   // payload: optional bytes
   pub fn payload(self) -> ::protobuf::View<'msg, ::protobuf::ProtoBytes> {
     let str_view = unsafe {
       self.inner.ptr().get_string_at_index(
-        5, (b"").into()
+        4, (b"").into()
       )
     };
     unsafe { str_view.as_ref() }
@@ -484,7 +469,7 @@ impl<'msg> PacketMut<'msg> {
       // i32->enum types, since even for closed enums we trust
       // upb to only return one of the named values).
       self.inner.ptr().get_i32_at_index(
-        1, (super::LoginPacketType::Loginrequest).into()
+        1, (super::LoginPacketType::Loginresult).into()
       ).try_into().unwrap()
     }
   }
@@ -582,37 +567,11 @@ impl<'msg> PacketMut<'msg> {
     }
   }
 
-  // timestamp: optional uint64
-  pub fn timestamp(&self) -> u64 {
-    unsafe {
-      // TODO: b/361751487: This .into() and .try_into() is only
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      // perfectly (and do an unchecked conversion for
-      // i32->enum types, since even for closed enums we trust
-      // upb to only return one of the named values).
-      self.inner.ptr().get_u64_at_index(
-        4, (0u64).into()
-      ).try_into().unwrap()
-    }
-  }
-  pub fn set_timestamp(&mut self, val: u64) {
-    unsafe {
-      // TODO: b/361751487: This .into() is only here
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      //perfectly.
-      self.inner.ptr_mut().set_base_field_u64_at_index(
-        4, val.into()
-      )
-    }
-  }
-
   // payload: optional bytes
   pub fn payload(&self) -> ::protobuf::View<'_, ::protobuf::ProtoBytes> {
     let str_view = unsafe {
       self.inner.ptr().get_string_at_index(
-        5, (b"").into()
+        4, (b"").into()
       )
     };
     unsafe { str_view.as_ref() }
@@ -627,7 +586,7 @@ impl<'msg> PacketMut<'msg> {
 
     unsafe {
       self.inner.ptr_mut().set_base_field_string_at_index(
-        5,
+        4,
         view,
       );
     }
@@ -812,7 +771,7 @@ impl Packet {
       // i32->enum types, since even for closed enums we trust
       // upb to only return one of the named values).
       self.inner.ptr().get_i32_at_index(
-        1, (super::LoginPacketType::Loginrequest).into()
+        1, (super::LoginPacketType::Loginresult).into()
       ).try_into().unwrap()
     }
   }
@@ -910,37 +869,11 @@ impl Packet {
     }
   }
 
-  // timestamp: optional uint64
-  pub fn timestamp(&self) -> u64 {
-    unsafe {
-      // TODO: b/361751487: This .into() and .try_into() is only
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      // perfectly (and do an unchecked conversion for
-      // i32->enum types, since even for closed enums we trust
-      // upb to only return one of the named values).
-      self.inner.ptr().get_u64_at_index(
-        4, (0u64).into()
-      ).try_into().unwrap()
-    }
-  }
-  pub fn set_timestamp(&mut self, val: u64) {
-    unsafe {
-      // TODO: b/361751487: This .into() is only here
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      //perfectly.
-      self.inner.ptr_mut().set_base_field_u64_at_index(
-        4, val.into()
-      )
-    }
-  }
-
   // payload: optional bytes
   pub fn payload(&self) -> ::protobuf::View<'_, ::protobuf::ProtoBytes> {
     let str_view = unsafe {
       self.inner.ptr().get_string_at_index(
-        5, (b"").into()
+        4, (b"").into()
       )
     };
     unsafe { str_view.as_ref() }
@@ -955,7 +888,7 @@ impl Packet {
 
     unsafe {
       self.inner.ptr_mut().set_base_field_string_at_index(
-        5,
+        4,
         view,
       );
     }
@@ -1021,8 +954,8 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for Packet {
     ONCE_LOCK.get_or_init(|| unsafe {
       super::Proto__Packet_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$....,P0P^!|#|$|%".as_ptr(),
-              17,
+              "$....a0P^!|#|$|%".as_ptr(),
+              16,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
@@ -2336,22 +2269,22 @@ impl<'a> ::protobuf::MessageViewInterop<'a> for SystemMessageBodyView<'a> {
 
 // This variable must not be referenced except by protobuf generated
 // code.
-pub(crate) static mut Proto__LoginRequestBody_msg_init: ::protobuf::__internal::runtime::MiniTablePtr =
+pub(crate) static mut Proto__LoginResultBody_msg_init: ::protobuf::__internal::runtime::MiniTablePtr =
     ::protobuf::__internal::runtime::MiniTablePtr(::std::ptr::null_mut());
 #[allow(non_camel_case_types)]
-pub struct LoginRequestBody {
-  inner: ::protobuf::__internal::runtime::OwnedMessageInner<LoginRequestBody>
+pub struct LoginResultBody {
+  inner: ::protobuf::__internal::runtime::OwnedMessageInner<LoginResultBody>
 }
 
-impl ::protobuf::Message for LoginRequestBody {}
+impl ::protobuf::Message for LoginResultBody {}
 
-impl ::std::default::Default for LoginRequestBody {
+impl ::std::default::Default for LoginResultBody {
   fn default() -> Self {
     Self::new()
   }
 }
 
-impl ::protobuf::Parse for LoginRequestBody {
+impl ::protobuf::Parse for LoginResultBody {
   fn parse(serialized: &[u8]) -> ::std::result::Result<Self, ::protobuf::ParseError> {
     Self::parse(serialized)
   }
@@ -2361,7 +2294,7 @@ impl ::protobuf::Parse for LoginRequestBody {
   }
 }
 
-impl ::std::fmt::Debug for LoginRequestBody {
+impl ::std::fmt::Debug for LoginResultBody {
   fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
     let string = unsafe {
       ::protobuf::__internal::runtime::debug_string(
@@ -2373,46 +2306,46 @@ impl ::std::fmt::Debug for LoginRequestBody {
   }
 }
 
-impl ::protobuf::Serialize for LoginRequestBody {
+impl ::protobuf::Serialize for LoginResultBody {
   fn serialize(&self) -> ::std::result::Result<Vec<u8>, ::protobuf::SerializeError> {
     ::protobuf::AsView::as_view(self).serialize()
   }
 }
 
 // SAFETY:
-// - `LoginRequestBody` is `Sync` because it does not implement interior mutability.
-//    Neither does `LoginRequestBodyMut`.
-unsafe impl Sync for LoginRequestBody {}
+// - `LoginResultBody` is `Sync` because it does not implement interior mutability.
+//    Neither does `LoginResultBodyMut`.
+unsafe impl Sync for LoginResultBody {}
 
 // SAFETY:
-// - `LoginRequestBody` is `Send` because it uniquely owns its arena and does
+// - `LoginResultBody` is `Send` because it uniquely owns its arena and does
 //   not use thread-local data.
-unsafe impl Send for LoginRequestBody {}
+unsafe impl Send for LoginResultBody {}
 
-impl ::protobuf::Proxied for LoginRequestBody {
-  type View<'msg> = LoginRequestBodyView<'msg>;
+impl ::protobuf::Proxied for LoginResultBody {
+  type View<'msg> = LoginResultBodyView<'msg>;
 }
 
-impl ::protobuf::__internal::SealedInternal for LoginRequestBody {}
+impl ::protobuf::__internal::SealedInternal for LoginResultBody {}
 
-impl ::protobuf::MutProxied for LoginRequestBody {
-  type Mut<'msg> = LoginRequestBodyMut<'msg>;
+impl ::protobuf::MutProxied for LoginResultBody {
+  type Mut<'msg> = LoginResultBodyMut<'msg>;
 }
 
 #[derive(Copy, Clone)]
 #[allow(dead_code)]
-pub struct LoginRequestBodyView<'msg> {
-  inner: ::protobuf::__internal::runtime::MessageViewInner<'msg, LoginRequestBody>,
+pub struct LoginResultBodyView<'msg> {
+  inner: ::protobuf::__internal::runtime::MessageViewInner<'msg, LoginResultBody>,
   _phantom: ::std::marker::PhantomData<&'msg ()>,
 }
 
-impl<'msg> ::protobuf::__internal::SealedInternal for LoginRequestBodyView<'msg> {}
+impl<'msg> ::protobuf::__internal::SealedInternal for LoginResultBodyView<'msg> {}
 
-impl<'msg> ::protobuf::MessageView<'msg> for LoginRequestBodyView<'msg> {
-  type Message = LoginRequestBody;
+impl<'msg> ::protobuf::MessageView<'msg> for LoginResultBodyView<'msg> {
+  type Message = LoginResultBody;
 }
 
-impl ::std::fmt::Debug for LoginRequestBodyView<'_> {
+impl ::std::fmt::Debug for LoginResultBodyView<'_> {
   fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
     let string = unsafe {
       ::protobuf::__internal::runtime::debug_string(
@@ -2424,7 +2357,7 @@ impl ::std::fmt::Debug for LoginRequestBodyView<'_> {
   }
 }
 
-impl ::protobuf::Serialize for LoginRequestBodyView<'_> {
+impl ::protobuf::Serialize for LoginResultBodyView<'_> {
   fn serialize(&self) -> ::std::result::Result<Vec<u8>, ::protobuf::SerializeError> {
     // SAFETY: `MINI_TABLE` is the one associated with `self.raw_msg()`.
     let encoded = unsafe {
@@ -2435,17 +2368,17 @@ impl ::protobuf::Serialize for LoginRequestBodyView<'_> {
   }
 }
 
-impl ::std::default::Default for LoginRequestBodyView<'_> {
-  fn default() -> LoginRequestBodyView<'static> {
+impl ::std::default::Default for LoginResultBodyView<'_> {
+  fn default() -> LoginResultBodyView<'static> {
     let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(::protobuf::__internal::runtime::ScratchSpace::zeroed_block()) };
-    LoginRequestBodyView::new(::protobuf::__internal::Private, inner)
+    LoginResultBodyView::new(::protobuf::__internal::Private, inner)
   }
 }
 
 #[allow(dead_code)]
-impl<'msg> LoginRequestBodyView<'msg> {
+impl<'msg> LoginResultBodyView<'msg> {
   #[doc(hidden)]
-  pub fn new(_private: ::protobuf::__internal::Private, inner: ::protobuf::__internal::runtime::MessageViewInner<'msg, LoginRequestBody>) -> Self {
+  pub fn new(_private: ::protobuf::__internal::Private, inner: ::protobuf::__internal::runtime::MessageViewInner<'msg, LoginResultBody>) -> Self {
     Self { inner, _phantom: ::std::marker::PhantomData }
   }
 
@@ -2453,7 +2386,7 @@ impl<'msg> LoginRequestBodyView<'msg> {
     self.inner.raw()
   }
 
-  pub fn to_owned(&self) -> LoginRequestBody {
+  pub fn to_owned(&self) -> LoginResultBody {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
@@ -2472,550 +2405,6 @@ impl<'msg> LoginRequestBodyView<'msg> {
     }
   }
 
-}
-
-// SAFETY:
-// - `LoginRequestBodyView` is `Sync` because it does not support mutation.
-unsafe impl Sync for LoginRequestBodyView<'_> {}
-
-// SAFETY:
-// - `LoginRequestBodyView` is `Send` because while its alive a `LoginRequestBodyMut` cannot.
-// - `LoginRequestBodyView` does not use thread-local data.
-unsafe impl Send for LoginRequestBodyView<'_> {}
-
-impl<'msg> ::protobuf::Proxy<'msg> for LoginRequestBodyView<'msg> {}
-impl<'msg> ::protobuf::ViewProxy<'msg> for LoginRequestBodyView<'msg> {}
-
-impl<'msg> ::protobuf::AsView for LoginRequestBodyView<'msg> {
-  type Proxied = LoginRequestBody;
-  fn as_view(&self) -> ::protobuf::View<'msg, LoginRequestBody> {
-    *self
-  }
-}
-
-impl<'msg> ::protobuf::IntoView<'msg> for LoginRequestBodyView<'msg> {
-  fn into_view<'shorter>(self) -> LoginRequestBodyView<'shorter>
-  where
-      'msg: 'shorter {
-    self
-  }
-}
-
-impl<'msg> ::protobuf::IntoProxied<LoginRequestBody> for LoginRequestBodyView<'msg> {
-  fn into_proxied(self, _private: ::protobuf::__internal::Private) -> LoginRequestBody {
-    let mut dst = LoginRequestBody::new();
-    let dst_raw = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_raw_message_mut(&mut dst, ::protobuf::__internal::Private);
-    let dst_arena = ::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut dst, ::protobuf::__internal::Private);
-    let src_raw = ::protobuf::__internal::runtime::UpbGetMessagePtr::get_raw_message(&self, ::protobuf::__internal::Private);
-
-    unsafe { ::protobuf::__internal::runtime::upb_Message_DeepCopy(
-      dst_raw,
-      src_raw,
-      <Self as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table(),
-      dst_arena.raw(),
-    ) };
-    dst
-  }
-}
-
-impl<'msg> ::protobuf::IntoProxied<LoginRequestBody> for LoginRequestBodyMut<'msg> {
-  fn into_proxied(self, _private: ::protobuf::__internal::Private) -> LoginRequestBody {
-    ::protobuf::IntoProxied::into_proxied(::protobuf::IntoView::into_view(self), _private)
-  }
-}
-
-impl ::protobuf::__internal::runtime::UpbTypeConversions for LoginRequestBody {
-    fn upb_type() -> ::protobuf::__internal::runtime::CType {
-        ::protobuf::__internal::runtime::CType::Message
-    }
-
-    fn to_message_value(
-        val: ::protobuf::View<'_, Self>) -> ::protobuf::__internal::runtime::upb_MessageValue {
-        ::protobuf::__internal::runtime::upb_MessageValue { msg_val: Some(val.raw_msg()) }
-    }
-
-    unsafe fn into_message_value_fuse_if_required(
-      raw_parent_arena: ::protobuf::__internal::runtime::RawArena,
-      mut val: Self) -> ::protobuf::__internal::runtime::upb_MessageValue {
-      // SAFETY: The arena memory is not freed due to `ManuallyDrop`.
-      let parent_arena = ::std::mem::ManuallyDrop::new(
-          unsafe { ::protobuf::__internal::runtime::Arena::from_raw(raw_parent_arena) });
-
-      parent_arena.fuse(val.as_message_mut_inner(::protobuf::__internal::Private).arena());
-      ::protobuf::__internal::runtime::upb_MessageValue { msg_val: Some(val.raw_msg()) }
-    }
-
-    unsafe fn from_message_value<'msg>(msg: ::protobuf::__internal::runtime::upb_MessageValue)
-        -> ::protobuf::View<'msg, Self> {
-        let raw = unsafe { msg.msg_val }.expect("expected present message value in map");
-        let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-        LoginRequestBodyView::new(::protobuf::__internal::Private, inner)
-    }
-
-    unsafe fn from_message_mut<'msg>(msg: ::protobuf::__internal::runtime::RawMessage, arena: &'msg ::protobuf::__internal::runtime::Arena)
-        -> LoginRequestBodyMut<'msg> {
-        let inner = unsafe { ::protobuf::__internal::runtime::MessageMutInner::<'msg, LoginRequestBody>::wrap_raw(msg, arena) };
-        LoginRequestBodyMut::new(::protobuf::__internal::Private, inner)
-    }
-}
-
-#[allow(dead_code)]
-#[allow(non_camel_case_types)]
-pub struct LoginRequestBodyMut<'msg> {
-  inner: ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginRequestBody>,
-}
-
-impl<'msg> ::protobuf::__internal::SealedInternal for LoginRequestBodyMut<'msg> {}
-
-impl<'msg> ::protobuf::MessageMut<'msg> for LoginRequestBodyMut<'msg> {
-  type Message = LoginRequestBody;
-}
-
-impl ::std::fmt::Debug for LoginRequestBodyMut<'_> {
-  fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-    let string = unsafe {
-      ::protobuf::__internal::runtime::debug_string(
-        self.raw_msg(),
-        <Self as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
-      )
-    };
-    write!(f, "{}", string)
-  }
-}
-
-impl ::protobuf::Serialize for LoginRequestBodyMut<'_> {
-  fn serialize(&self) -> ::std::result::Result<Vec<u8>, ::protobuf::SerializeError> {
-    ::protobuf::AsView::as_view(self).serialize()
-  }
-}
-
-#[allow(dead_code)]
-impl<'msg> LoginRequestBodyMut<'msg> {
-  #[doc(hidden)]
-  pub fn from_parent<ParentT: ::protobuf::Message>(
-             _private: ::protobuf::__internal::Private,
-             parent: ::protobuf::__internal::runtime::MessageMutInner<'msg, ParentT>,
-             msg: ::protobuf::__internal::runtime::RawMessage)
-    -> Self {
-    Self {
-      inner: ::protobuf::__internal::runtime::MessageMutInner::from_parent(parent, msg)
-    }
-  }
-
-  #[doc(hidden)]
-  pub fn new(_private: ::protobuf::__internal::Private, inner: ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginRequestBody>) -> Self {
-    Self { inner }
-  }
-
-  fn raw_msg(&self) -> ::protobuf::__internal::runtime::RawMessage {
-    self.inner.raw()
-  }
-
-  #[doc(hidden)]
-  pub fn as_message_mut_inner(&mut self, _private: ::protobuf::__internal::Private)
-    -> ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginRequestBody> {
-    self.inner
-  }
-
-  pub fn to_owned(&self) -> LoginRequestBody {
-    ::protobuf::AsView::as_view(self).to_owned()
-  }
-
-  fn arena(&mut self) -> &::protobuf::__internal::runtime::Arena {
-    self.inner.arena()
-  }
-
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
-    unsafe {
-      // TODO: b/361751487: This .into() and .try_into() is only
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      // perfectly (and do an unchecked conversion for
-      // i32->enum types, since even for closed enums we trust
-      // upb to only return one of the named values).
-      self.inner.ptr().get_u64_at_index(
-        0, (0u64).into()
-      ).try_into().unwrap()
-    }
-  }
-  pub fn set_userId(&mut self, val: u64) {
-    unsafe {
-      // TODO: b/361751487: This .into() is only here
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      //perfectly.
-      self.inner.ptr_mut().set_base_field_u64_at_index(
-        0, val.into()
-      )
-    }
-  }
-
-}
-
-// SAFETY:
-// - `LoginRequestBodyMut` does not perform any shared mutation.
-// - `LoginRequestBodyMut` is not `Send`, and so even in the presence of mutator
-//   splitting, synchronous access of an arena is impossible.
-unsafe impl Sync for LoginRequestBodyMut<'_> {}
-
-impl<'msg> ::protobuf::Proxy<'msg> for LoginRequestBodyMut<'msg> {}
-impl<'msg> ::protobuf::MutProxy<'msg> for LoginRequestBodyMut<'msg> {}
-
-impl<'msg> ::protobuf::AsView for LoginRequestBodyMut<'msg> {
-  type Proxied = LoginRequestBody;
-  fn as_view(&self) -> ::protobuf::View<'_, LoginRequestBody> {
-    LoginRequestBodyView {
-      inner: ::protobuf::__internal::runtime::MessageViewInner::view_of_mut(self.inner.clone()),
-      _phantom: ::std::marker::PhantomData
-    }
-  }
-}
-
-impl<'msg> ::protobuf::IntoView<'msg> for LoginRequestBodyMut<'msg> {
-  fn into_view<'shorter>(self) -> ::protobuf::View<'shorter, LoginRequestBody>
-  where
-      'msg: 'shorter {
-    LoginRequestBodyView {
-      inner: ::protobuf::__internal::runtime::MessageViewInner::view_of_mut(self.inner.clone()),
-      _phantom: ::std::marker::PhantomData
-    }
-  }
-}
-
-impl<'msg> ::protobuf::AsMut for LoginRequestBodyMut<'msg> {
-  type MutProxied = LoginRequestBody;
-  fn as_mut(&mut self) -> LoginRequestBodyMut<'msg> {
-    LoginRequestBodyMut { inner: self.inner }
-  }
-}
-
-impl<'msg> ::protobuf::IntoMut<'msg> for LoginRequestBodyMut<'msg> {
-  fn into_mut<'shorter>(self) -> LoginRequestBodyMut<'shorter>
-  where
-      'msg: 'shorter {
-    self
-  }
-}
-
-#[allow(dead_code)]
-impl LoginRequestBody {
-  pub fn new() -> Self {
-    Self { inner: ::protobuf::__internal::runtime::OwnedMessageInner::<Self>::new() }
-  }
-
-  fn raw_msg(&self) -> ::protobuf::__internal::runtime::RawMessage {
-    self.inner.raw()
-  }
-
-  #[doc(hidden)]
-  pub fn as_message_mut_inner(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessageMutInner<'_, LoginRequestBody> {
-    ::protobuf::__internal::runtime::MessageMutInner::mut_of_owned(&mut self.inner)
-  }
-
-  fn arena(&mut self) -> &::protobuf::__internal::runtime::Arena {
-    self.inner.arena()
-  }
-
-  pub fn parse(data: &[u8]) -> ::std::result::Result<Self, ::protobuf::ParseError> {
-    let mut msg = Self::new();
-    ::protobuf::ClearAndParse::clear_and_parse(&mut msg, data).map(|_| msg)
-  }
-
-  pub fn parse_dont_enforce_required(data: &[u8]) -> ::std::result::Result<Self, ::protobuf::ParseError> {
-    let mut msg = Self::new();
-    ::protobuf::ClearAndParse::clear_and_parse_dont_enforce_required(&mut msg, data).map(|_| msg)
-  }
-
-  pub fn as_view(&self) -> LoginRequestBodyView {
-    LoginRequestBodyView::new(
-        ::protobuf::__internal::Private,
-        ::protobuf::__internal::runtime::MessageViewInner::view_of_owned(&self.inner))
-  }
-
-  pub fn as_mut(&mut self) -> LoginRequestBodyMut {
-    let inner = ::protobuf::__internal::runtime::MessageMutInner::mut_of_owned(&mut self.inner);
-    LoginRequestBodyMut::new(::protobuf::__internal::Private, inner)
-  }
-
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
-    unsafe {
-      // TODO: b/361751487: This .into() and .try_into() is only
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      // perfectly (and do an unchecked conversion for
-      // i32->enum types, since even for closed enums we trust
-      // upb to only return one of the named values).
-      self.inner.ptr().get_u64_at_index(
-        0, (0u64).into()
-      ).try_into().unwrap()
-    }
-  }
-  pub fn set_userId(&mut self, val: u64) {
-    unsafe {
-      // TODO: b/361751487: This .into() is only here
-      // here for the enum<->i32 case, we should avoid it for
-      // other primitives where the types naturally match
-      //perfectly.
-      self.inner.ptr_mut().set_base_field_u64_at_index(
-        0, val.into()
-      )
-    }
-  }
-
-}  // impl LoginRequestBody
-
-impl ::std::ops::Drop for LoginRequestBody {
-  fn drop(&mut self) {
-  }
-}
-
-impl ::std::clone::Clone for LoginRequestBody {
-  fn clone(&self) -> Self {
-    self.as_view().to_owned()
-  }
-}
-
-impl ::protobuf::AsView for LoginRequestBody {
-  type Proxied = Self;
-  fn as_view(&self) -> LoginRequestBodyView {
-    self.as_view()
-  }
-}
-
-impl ::protobuf::AsMut for LoginRequestBody {
-  type MutProxied = Self;
-  fn as_mut(&mut self) -> LoginRequestBodyMut {
-    self.as_mut()
-  }
-}
-
-unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginRequestBody {
-  fn mini_table() -> *const ::protobuf::__internal::runtime::upb_MiniTable {
-    static ONCE_LOCK: ::std::sync::OnceLock<::protobuf::__internal::runtime::MiniTablePtr> =
-        ::std::sync::OnceLock::new();
-    ONCE_LOCK.get_or_init(|| unsafe {
-      super::Proto__LoginRequestBody_msg_init.0 =
-          ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$,P".as_ptr(),
-              3,
-              ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
-              ::std::ptr::null_mut());
-      let submessages = [
-      ];
-      let subenums = [
-      ];
-      assert!(::protobuf::__internal::runtime::upb_MiniTable_Link(
-          super::Proto__LoginRequestBody_msg_init.0,
-          submessages.as_ptr() as *const *const ::protobuf::__internal::runtime::upb_MiniTable,
-          submessages.len(), subenums.as_ptr(), subenums.len()));
-      ::protobuf::__internal::runtime::MiniTablePtr(super::Proto__LoginRequestBody_msg_init.0)
-    }).0
-  }
-}
-unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginRequestBody {
-  fn get_arena(&mut self, _private: ::protobuf::__internal::Private) -> &::protobuf::__internal::runtime::Arena {
-    self.inner.arena()
-  }
-}
-
-unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginRequestBodyView<'_> {
-  #[inline(always)]
-  fn mini_table() -> *const ::protobuf::__internal::runtime::upb_MiniTable {
-    <LoginRequestBody as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
-  }
-}
-
-unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginRequestBodyMut<'_> {
-  #[inline(always)]
-  fn mini_table() -> *const ::protobuf::__internal::runtime::upb_MiniTable {
-    <LoginRequestBody as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
-  }
-}
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtrMut for LoginRequestBody {
-  type Msg = LoginRequestBody;
-  fn get_ptr_mut(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginRequestBody> {
-    self.inner.ptr_mut()
-  }
-}
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginRequestBody {
-  type Msg = LoginRequestBody;
-  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginRequestBody> {
-    self.inner.ptr()
-  }
-}
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtrMut for LoginRequestBodyMut<'_> {
-  type Msg = LoginRequestBody;
-  fn get_ptr_mut(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginRequestBody> {
-    self.inner.ptr_mut()
-  }
-}
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginRequestBodyMut<'_> {
-  type Msg = LoginRequestBody;
-  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginRequestBody> {
-    self.inner.ptr()
-  }
-}
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginRequestBodyView<'_> {
-  type Msg = LoginRequestBody;
-  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginRequestBody> {
-    self.inner.ptr()
-  }
-}
-
-unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginRequestBodyMut<'_> {
-  fn get_arena(&mut self, _private: ::protobuf::__internal::Private) -> &::protobuf::__internal::runtime::Arena {
-    self.inner.arena()
-  }
-}
-
-
-// upb kernel doesn't support any owned message or message mut interop.
-impl ::protobuf::OwnedMessageInterop for LoginRequestBody {}
-impl<'a> ::protobuf::MessageMutInterop<'a> for LoginRequestBodyMut<'a> {}
-
-impl<'a> ::protobuf::MessageViewInterop<'a> for LoginRequestBodyView<'a> {
-  unsafe fn __unstable_wrap_raw_message(
-    msg: &'a *const ::std::ffi::c_void) -> Self {
-    let raw = ::protobuf::__internal::runtime::RawMessage::new(*msg as *mut _).unwrap();
-    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-    Self::new(::protobuf::__internal::Private, inner)
-  }
-  unsafe fn __unstable_wrap_raw_message_unchecked_lifetime(
-    msg: *const ::std::ffi::c_void) -> Self {
-    let raw = ::protobuf::__internal::runtime::RawMessage::new(msg as *mut _).unwrap();
-    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-    Self::new(::protobuf::__internal::Private, inner)
-  }
-  fn __unstable_as_raw_message(&self) -> *const ::std::ffi::c_void {
-    self.inner.raw().as_ptr() as *const _
-  }
-}
-
-// This variable must not be referenced except by protobuf generated
-// code.
-pub(crate) static mut Proto__LoginResponseBody_msg_init: ::protobuf::__internal::runtime::MiniTablePtr =
-    ::protobuf::__internal::runtime::MiniTablePtr(::std::ptr::null_mut());
-#[allow(non_camel_case_types)]
-pub struct LoginResponseBody {
-  inner: ::protobuf::__internal::runtime::OwnedMessageInner<LoginResponseBody>
-}
-
-impl ::protobuf::Message for LoginResponseBody {}
-
-impl ::std::default::Default for LoginResponseBody {
-  fn default() -> Self {
-    Self::new()
-  }
-}
-
-impl ::protobuf::Parse for LoginResponseBody {
-  fn parse(serialized: &[u8]) -> ::std::result::Result<Self, ::protobuf::ParseError> {
-    Self::parse(serialized)
-  }
-
-  fn parse_dont_enforce_required(serialized: &[u8]) -> ::std::result::Result<Self, ::protobuf::ParseError> {
-    Self::parse_dont_enforce_required(serialized)
-  }
-}
-
-impl ::std::fmt::Debug for LoginResponseBody {
-  fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-    let string = unsafe {
-      ::protobuf::__internal::runtime::debug_string(
-        self.raw_msg(),
-        <Self as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
-      )
-    };
-    write!(f, "{}", string)
-  }
-}
-
-impl ::protobuf::Serialize for LoginResponseBody {
-  fn serialize(&self) -> ::std::result::Result<Vec<u8>, ::protobuf::SerializeError> {
-    ::protobuf::AsView::as_view(self).serialize()
-  }
-}
-
-// SAFETY:
-// - `LoginResponseBody` is `Sync` because it does not implement interior mutability.
-//    Neither does `LoginResponseBodyMut`.
-unsafe impl Sync for LoginResponseBody {}
-
-// SAFETY:
-// - `LoginResponseBody` is `Send` because it uniquely owns its arena and does
-//   not use thread-local data.
-unsafe impl Send for LoginResponseBody {}
-
-impl ::protobuf::Proxied for LoginResponseBody {
-  type View<'msg> = LoginResponseBodyView<'msg>;
-}
-
-impl ::protobuf::__internal::SealedInternal for LoginResponseBody {}
-
-impl ::protobuf::MutProxied for LoginResponseBody {
-  type Mut<'msg> = LoginResponseBodyMut<'msg>;
-}
-
-#[derive(Copy, Clone)]
-#[allow(dead_code)]
-pub struct LoginResponseBodyView<'msg> {
-  inner: ::protobuf::__internal::runtime::MessageViewInner<'msg, LoginResponseBody>,
-  _phantom: ::std::marker::PhantomData<&'msg ()>,
-}
-
-impl<'msg> ::protobuf::__internal::SealedInternal for LoginResponseBodyView<'msg> {}
-
-impl<'msg> ::protobuf::MessageView<'msg> for LoginResponseBodyView<'msg> {
-  type Message = LoginResponseBody;
-}
-
-impl ::std::fmt::Debug for LoginResponseBodyView<'_> {
-  fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-    let string = unsafe {
-      ::protobuf::__internal::runtime::debug_string(
-        self.raw_msg(),
-        <Self as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
-      )
-    };
-    write!(f, "{}", string)
-  }
-}
-
-impl ::protobuf::Serialize for LoginResponseBodyView<'_> {
-  fn serialize(&self) -> ::std::result::Result<Vec<u8>, ::protobuf::SerializeError> {
-    // SAFETY: `MINI_TABLE` is the one associated with `self.raw_msg()`.
-    let encoded = unsafe {
-      ::protobuf::__internal::runtime::wire::encode(self.raw_msg(),
-          <Self as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table())
-    };
-    encoded.map_err(|_| ::protobuf::SerializeError)
-  }
-}
-
-impl ::std::default::Default for LoginResponseBodyView<'_> {
-  fn default() -> LoginResponseBodyView<'static> {
-    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(::protobuf::__internal::runtime::ScratchSpace::zeroed_block()) };
-    LoginResponseBodyView::new(::protobuf::__internal::Private, inner)
-  }
-}
-
-#[allow(dead_code)]
-impl<'msg> LoginResponseBodyView<'msg> {
-  #[doc(hidden)]
-  pub fn new(_private: ::protobuf::__internal::Private, inner: ::protobuf::__internal::runtime::MessageViewInner<'msg, LoginResponseBody>) -> Self {
-    Self { inner, _phantom: ::std::marker::PhantomData }
-  }
-
-  fn raw_msg(&self) -> ::protobuf::__internal::runtime::RawMessage {
-    self.inner.raw()
-  }
-
-  pub fn to_owned(&self) -> LoginResponseBody {
-    ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
-  }
-
   // isSuccessed: optional bool
   pub fn isSuccessed(self) -> bool {
     unsafe {
@@ -3026,7 +2415,7 @@ impl<'msg> LoginResponseBodyView<'msg> {
       // i32->enum types, since even for closed enums we trust
       // upb to only return one of the named values).
       self.inner.ptr().get_bool_at_index(
-        0, (false).into()
+        1, (false).into()
       ).try_into().unwrap()
     }
   }
@@ -3034,35 +2423,35 @@ impl<'msg> LoginResponseBodyView<'msg> {
 }
 
 // SAFETY:
-// - `LoginResponseBodyView` is `Sync` because it does not support mutation.
-unsafe impl Sync for LoginResponseBodyView<'_> {}
+// - `LoginResultBodyView` is `Sync` because it does not support mutation.
+unsafe impl Sync for LoginResultBodyView<'_> {}
 
 // SAFETY:
-// - `LoginResponseBodyView` is `Send` because while its alive a `LoginResponseBodyMut` cannot.
-// - `LoginResponseBodyView` does not use thread-local data.
-unsafe impl Send for LoginResponseBodyView<'_> {}
+// - `LoginResultBodyView` is `Send` because while its alive a `LoginResultBodyMut` cannot.
+// - `LoginResultBodyView` does not use thread-local data.
+unsafe impl Send for LoginResultBodyView<'_> {}
 
-impl<'msg> ::protobuf::Proxy<'msg> for LoginResponseBodyView<'msg> {}
-impl<'msg> ::protobuf::ViewProxy<'msg> for LoginResponseBodyView<'msg> {}
+impl<'msg> ::protobuf::Proxy<'msg> for LoginResultBodyView<'msg> {}
+impl<'msg> ::protobuf::ViewProxy<'msg> for LoginResultBodyView<'msg> {}
 
-impl<'msg> ::protobuf::AsView for LoginResponseBodyView<'msg> {
-  type Proxied = LoginResponseBody;
-  fn as_view(&self) -> ::protobuf::View<'msg, LoginResponseBody> {
+impl<'msg> ::protobuf::AsView for LoginResultBodyView<'msg> {
+  type Proxied = LoginResultBody;
+  fn as_view(&self) -> ::protobuf::View<'msg, LoginResultBody> {
     *self
   }
 }
 
-impl<'msg> ::protobuf::IntoView<'msg> for LoginResponseBodyView<'msg> {
-  fn into_view<'shorter>(self) -> LoginResponseBodyView<'shorter>
+impl<'msg> ::protobuf::IntoView<'msg> for LoginResultBodyView<'msg> {
+  fn into_view<'shorter>(self) -> LoginResultBodyView<'shorter>
   where
       'msg: 'shorter {
     self
   }
 }
 
-impl<'msg> ::protobuf::IntoProxied<LoginResponseBody> for LoginResponseBodyView<'msg> {
-  fn into_proxied(self, _private: ::protobuf::__internal::Private) -> LoginResponseBody {
-    let mut dst = LoginResponseBody::new();
+impl<'msg> ::protobuf::IntoProxied<LoginResultBody> for LoginResultBodyView<'msg> {
+  fn into_proxied(self, _private: ::protobuf::__internal::Private) -> LoginResultBody {
+    let mut dst = LoginResultBody::new();
     let dst_raw = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_raw_message_mut(&mut dst, ::protobuf::__internal::Private);
     let dst_arena = ::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut dst, ::protobuf::__internal::Private);
     let src_raw = ::protobuf::__internal::runtime::UpbGetMessagePtr::get_raw_message(&self, ::protobuf::__internal::Private);
@@ -3077,13 +2466,13 @@ impl<'msg> ::protobuf::IntoProxied<LoginResponseBody> for LoginResponseBodyView<
   }
 }
 
-impl<'msg> ::protobuf::IntoProxied<LoginResponseBody> for LoginResponseBodyMut<'msg> {
-  fn into_proxied(self, _private: ::protobuf::__internal::Private) -> LoginResponseBody {
+impl<'msg> ::protobuf::IntoProxied<LoginResultBody> for LoginResultBodyMut<'msg> {
+  fn into_proxied(self, _private: ::protobuf::__internal::Private) -> LoginResultBody {
     ::protobuf::IntoProxied::into_proxied(::protobuf::IntoView::into_view(self), _private)
   }
 }
 
-impl ::protobuf::__internal::runtime::UpbTypeConversions for LoginResponseBody {
+impl ::protobuf::__internal::runtime::UpbTypeConversions for LoginResultBody {
     fn upb_type() -> ::protobuf::__internal::runtime::CType {
         ::protobuf::__internal::runtime::CType::Message
     }
@@ -3108,29 +2497,29 @@ impl ::protobuf::__internal::runtime::UpbTypeConversions for LoginResponseBody {
         -> ::protobuf::View<'msg, Self> {
         let raw = unsafe { msg.msg_val }.expect("expected present message value in map");
         let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-        LoginResponseBodyView::new(::protobuf::__internal::Private, inner)
+        LoginResultBodyView::new(::protobuf::__internal::Private, inner)
     }
 
     unsafe fn from_message_mut<'msg>(msg: ::protobuf::__internal::runtime::RawMessage, arena: &'msg ::protobuf::__internal::runtime::Arena)
-        -> LoginResponseBodyMut<'msg> {
-        let inner = unsafe { ::protobuf::__internal::runtime::MessageMutInner::<'msg, LoginResponseBody>::wrap_raw(msg, arena) };
-        LoginResponseBodyMut::new(::protobuf::__internal::Private, inner)
+        -> LoginResultBodyMut<'msg> {
+        let inner = unsafe { ::protobuf::__internal::runtime::MessageMutInner::<'msg, LoginResultBody>::wrap_raw(msg, arena) };
+        LoginResultBodyMut::new(::protobuf::__internal::Private, inner)
     }
 }
 
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
-pub struct LoginResponseBodyMut<'msg> {
-  inner: ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginResponseBody>,
+pub struct LoginResultBodyMut<'msg> {
+  inner: ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginResultBody>,
 }
 
-impl<'msg> ::protobuf::__internal::SealedInternal for LoginResponseBodyMut<'msg> {}
+impl<'msg> ::protobuf::__internal::SealedInternal for LoginResultBodyMut<'msg> {}
 
-impl<'msg> ::protobuf::MessageMut<'msg> for LoginResponseBodyMut<'msg> {
-  type Message = LoginResponseBody;
+impl<'msg> ::protobuf::MessageMut<'msg> for LoginResultBodyMut<'msg> {
+  type Message = LoginResultBody;
 }
 
-impl ::std::fmt::Debug for LoginResponseBodyMut<'_> {
+impl ::std::fmt::Debug for LoginResultBodyMut<'_> {
   fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
     let string = unsafe {
       ::protobuf::__internal::runtime::debug_string(
@@ -3142,14 +2531,14 @@ impl ::std::fmt::Debug for LoginResponseBodyMut<'_> {
   }
 }
 
-impl ::protobuf::Serialize for LoginResponseBodyMut<'_> {
+impl ::protobuf::Serialize for LoginResultBodyMut<'_> {
   fn serialize(&self) -> ::std::result::Result<Vec<u8>, ::protobuf::SerializeError> {
     ::protobuf::AsView::as_view(self).serialize()
   }
 }
 
 #[allow(dead_code)]
-impl<'msg> LoginResponseBodyMut<'msg> {
+impl<'msg> LoginResultBodyMut<'msg> {
   #[doc(hidden)]
   pub fn from_parent<ParentT: ::protobuf::Message>(
              _private: ::protobuf::__internal::Private,
@@ -3162,7 +2551,7 @@ impl<'msg> LoginResponseBodyMut<'msg> {
   }
 
   #[doc(hidden)]
-  pub fn new(_private: ::protobuf::__internal::Private, inner: ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginResponseBody>) -> Self {
+  pub fn new(_private: ::protobuf::__internal::Private, inner: ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginResultBody>) -> Self {
     Self { inner }
   }
 
@@ -3172,16 +2561,42 @@ impl<'msg> LoginResponseBodyMut<'msg> {
 
   #[doc(hidden)]
   pub fn as_message_mut_inner(&mut self, _private: ::protobuf::__internal::Private)
-    -> ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginResponseBody> {
+    -> ::protobuf::__internal::runtime::MessageMutInner<'msg, LoginResultBody> {
     self.inner
   }
 
-  pub fn to_owned(&self) -> LoginResponseBody {
+  pub fn to_owned(&self) -> LoginResultBody {
     ::protobuf::AsView::as_view(self).to_owned()
   }
 
   fn arena(&mut self) -> &::protobuf::__internal::runtime::Arena {
     self.inner.arena()
+  }
+
+  // userId: optional uint64
+  pub fn userId(&self) -> u64 {
+    unsafe {
+      // TODO: b/361751487: This .into() and .try_into() is only
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      // perfectly (and do an unchecked conversion for
+      // i32->enum types, since even for closed enums we trust
+      // upb to only return one of the named values).
+      self.inner.ptr().get_u64_at_index(
+        0, (0u64).into()
+      ).try_into().unwrap()
+    }
+  }
+  pub fn set_userId(&mut self, val: u64) {
+    unsafe {
+      // TODO: b/361751487: This .into() is only here
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      //perfectly.
+      self.inner.ptr_mut().set_base_field_u64_at_index(
+        0, val.into()
+      )
+    }
   }
 
   // isSuccessed: optional bool
@@ -3194,7 +2609,7 @@ impl<'msg> LoginResponseBodyMut<'msg> {
       // i32->enum types, since even for closed enums we trust
       // upb to only return one of the named values).
       self.inner.ptr().get_bool_at_index(
-        0, (false).into()
+        1, (false).into()
       ).try_into().unwrap()
     }
   }
@@ -3205,7 +2620,7 @@ impl<'msg> LoginResponseBodyMut<'msg> {
       // other primitives where the types naturally match
       //perfectly.
       self.inner.ptr_mut().set_base_field_bool_at_index(
-        0, val.into()
+        1, val.into()
       )
     }
   }
@@ -3213,44 +2628,44 @@ impl<'msg> LoginResponseBodyMut<'msg> {
 }
 
 // SAFETY:
-// - `LoginResponseBodyMut` does not perform any shared mutation.
-// - `LoginResponseBodyMut` is not `Send`, and so even in the presence of mutator
+// - `LoginResultBodyMut` does not perform any shared mutation.
+// - `LoginResultBodyMut` is not `Send`, and so even in the presence of mutator
 //   splitting, synchronous access of an arena is impossible.
-unsafe impl Sync for LoginResponseBodyMut<'_> {}
+unsafe impl Sync for LoginResultBodyMut<'_> {}
 
-impl<'msg> ::protobuf::Proxy<'msg> for LoginResponseBodyMut<'msg> {}
-impl<'msg> ::protobuf::MutProxy<'msg> for LoginResponseBodyMut<'msg> {}
+impl<'msg> ::protobuf::Proxy<'msg> for LoginResultBodyMut<'msg> {}
+impl<'msg> ::protobuf::MutProxy<'msg> for LoginResultBodyMut<'msg> {}
 
-impl<'msg> ::protobuf::AsView for LoginResponseBodyMut<'msg> {
-  type Proxied = LoginResponseBody;
-  fn as_view(&self) -> ::protobuf::View<'_, LoginResponseBody> {
-    LoginResponseBodyView {
+impl<'msg> ::protobuf::AsView for LoginResultBodyMut<'msg> {
+  type Proxied = LoginResultBody;
+  fn as_view(&self) -> ::protobuf::View<'_, LoginResultBody> {
+    LoginResultBodyView {
       inner: ::protobuf::__internal::runtime::MessageViewInner::view_of_mut(self.inner.clone()),
       _phantom: ::std::marker::PhantomData
     }
   }
 }
 
-impl<'msg> ::protobuf::IntoView<'msg> for LoginResponseBodyMut<'msg> {
-  fn into_view<'shorter>(self) -> ::protobuf::View<'shorter, LoginResponseBody>
+impl<'msg> ::protobuf::IntoView<'msg> for LoginResultBodyMut<'msg> {
+  fn into_view<'shorter>(self) -> ::protobuf::View<'shorter, LoginResultBody>
   where
       'msg: 'shorter {
-    LoginResponseBodyView {
+    LoginResultBodyView {
       inner: ::protobuf::__internal::runtime::MessageViewInner::view_of_mut(self.inner.clone()),
       _phantom: ::std::marker::PhantomData
     }
   }
 }
 
-impl<'msg> ::protobuf::AsMut for LoginResponseBodyMut<'msg> {
-  type MutProxied = LoginResponseBody;
-  fn as_mut(&mut self) -> LoginResponseBodyMut<'msg> {
-    LoginResponseBodyMut { inner: self.inner }
+impl<'msg> ::protobuf::AsMut for LoginResultBodyMut<'msg> {
+  type MutProxied = LoginResultBody;
+  fn as_mut(&mut self) -> LoginResultBodyMut<'msg> {
+    LoginResultBodyMut { inner: self.inner }
   }
 }
 
-impl<'msg> ::protobuf::IntoMut<'msg> for LoginResponseBodyMut<'msg> {
-  fn into_mut<'shorter>(self) -> LoginResponseBodyMut<'shorter>
+impl<'msg> ::protobuf::IntoMut<'msg> for LoginResultBodyMut<'msg> {
+  fn into_mut<'shorter>(self) -> LoginResultBodyMut<'shorter>
   where
       'msg: 'shorter {
     self
@@ -3258,7 +2673,7 @@ impl<'msg> ::protobuf::IntoMut<'msg> for LoginResponseBodyMut<'msg> {
 }
 
 #[allow(dead_code)]
-impl LoginResponseBody {
+impl LoginResultBody {
   pub fn new() -> Self {
     Self { inner: ::protobuf::__internal::runtime::OwnedMessageInner::<Self>::new() }
   }
@@ -3268,7 +2683,7 @@ impl LoginResponseBody {
   }
 
   #[doc(hidden)]
-  pub fn as_message_mut_inner(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessageMutInner<'_, LoginResponseBody> {
+  pub fn as_message_mut_inner(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessageMutInner<'_, LoginResultBody> {
     ::protobuf::__internal::runtime::MessageMutInner::mut_of_owned(&mut self.inner)
   }
 
@@ -3286,15 +2701,41 @@ impl LoginResponseBody {
     ::protobuf::ClearAndParse::clear_and_parse_dont_enforce_required(&mut msg, data).map(|_| msg)
   }
 
-  pub fn as_view(&self) -> LoginResponseBodyView {
-    LoginResponseBodyView::new(
+  pub fn as_view(&self) -> LoginResultBodyView {
+    LoginResultBodyView::new(
         ::protobuf::__internal::Private,
         ::protobuf::__internal::runtime::MessageViewInner::view_of_owned(&self.inner))
   }
 
-  pub fn as_mut(&mut self) -> LoginResponseBodyMut {
+  pub fn as_mut(&mut self) -> LoginResultBodyMut {
     let inner = ::protobuf::__internal::runtime::MessageMutInner::mut_of_owned(&mut self.inner);
-    LoginResponseBodyMut::new(::protobuf::__internal::Private, inner)
+    LoginResultBodyMut::new(::protobuf::__internal::Private, inner)
+  }
+
+  // userId: optional uint64
+  pub fn userId(&self) -> u64 {
+    unsafe {
+      // TODO: b/361751487: This .into() and .try_into() is only
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      // perfectly (and do an unchecked conversion for
+      // i32->enum types, since even for closed enums we trust
+      // upb to only return one of the named values).
+      self.inner.ptr().get_u64_at_index(
+        0, (0u64).into()
+      ).try_into().unwrap()
+    }
+  }
+  pub fn set_userId(&mut self, val: u64) {
+    unsafe {
+      // TODO: b/361751487: This .into() is only here
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      //perfectly.
+      self.inner.ptr_mut().set_base_field_u64_at_index(
+        0, val.into()
+      )
+    }
   }
 
   // isSuccessed: optional bool
@@ -3307,7 +2748,7 @@ impl LoginResponseBody {
       // i32->enum types, since even for closed enums we trust
       // upb to only return one of the named values).
       self.inner.ptr().get_bool_at_index(
-        0, (false).into()
+        1, (false).into()
       ).try_into().unwrap()
     }
   }
@@ -3318,47 +2759,47 @@ impl LoginResponseBody {
       // other primitives where the types naturally match
       //perfectly.
       self.inner.ptr_mut().set_base_field_bool_at_index(
-        0, val.into()
+        1, val.into()
       )
     }
   }
 
-}  // impl LoginResponseBody
+}  // impl LoginResultBody
 
-impl ::std::ops::Drop for LoginResponseBody {
+impl ::std::ops::Drop for LoginResultBody {
   fn drop(&mut self) {
   }
 }
 
-impl ::std::clone::Clone for LoginResponseBody {
+impl ::std::clone::Clone for LoginResultBody {
   fn clone(&self) -> Self {
     self.as_view().to_owned()
   }
 }
 
-impl ::protobuf::AsView for LoginResponseBody {
+impl ::protobuf::AsView for LoginResultBody {
   type Proxied = Self;
-  fn as_view(&self) -> LoginResponseBodyView {
+  fn as_view(&self) -> LoginResultBodyView {
     self.as_view()
   }
 }
 
-impl ::protobuf::AsMut for LoginResponseBody {
+impl ::protobuf::AsMut for LoginResultBody {
   type MutProxied = Self;
-  fn as_mut(&mut self) -> LoginResponseBodyMut {
+  fn as_mut(&mut self) -> LoginResultBodyMut {
     self.as_mut()
   }
 }
 
-unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResponseBody {
+unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResultBody {
   fn mini_table() -> *const ::protobuf::__internal::runtime::upb_MiniTable {
     static ONCE_LOCK: ::std::sync::OnceLock<::protobuf::__internal::runtime::MiniTablePtr> =
         ::std::sync::OnceLock::new();
     ONCE_LOCK.get_or_init(|| unsafe {
-      super::Proto__LoginResponseBody_msg_init.0 =
+      super::Proto__LoginResultBody_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$/P".as_ptr(),
-              3,
+              "$,P/P".as_ptr(),
+              5,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
@@ -3366,64 +2807,64 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginRespon
       let subenums = [
       ];
       assert!(::protobuf::__internal::runtime::upb_MiniTable_Link(
-          super::Proto__LoginResponseBody_msg_init.0,
+          super::Proto__LoginResultBody_msg_init.0,
           submessages.as_ptr() as *const *const ::protobuf::__internal::runtime::upb_MiniTable,
           submessages.len(), subenums.as_ptr(), subenums.len()));
-      ::protobuf::__internal::runtime::MiniTablePtr(super::Proto__LoginResponseBody_msg_init.0)
+      ::protobuf::__internal::runtime::MiniTablePtr(super::Proto__LoginResultBody_msg_init.0)
     }).0
   }
 }
-unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginResponseBody {
+unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginResultBody {
   fn get_arena(&mut self, _private: ::protobuf::__internal::Private) -> &::protobuf::__internal::runtime::Arena {
     self.inner.arena()
   }
 }
 
-unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResponseBodyView<'_> {
+unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResultBodyView<'_> {
   #[inline(always)]
   fn mini_table() -> *const ::protobuf::__internal::runtime::upb_MiniTable {
-    <LoginResponseBody as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
+    <LoginResultBody as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
   }
 }
 
-unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResponseBodyMut<'_> {
+unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResultBodyMut<'_> {
   #[inline(always)]
   fn mini_table() -> *const ::protobuf::__internal::runtime::upb_MiniTable {
-    <LoginResponseBody as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
+    <LoginResultBody as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table()
   }
 }
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtrMut for LoginResponseBody {
-  type Msg = LoginResponseBody;
-  fn get_ptr_mut(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResponseBody> {
+unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtrMut for LoginResultBody {
+  type Msg = LoginResultBody;
+  fn get_ptr_mut(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResultBody> {
     self.inner.ptr_mut()
   }
 }
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginResponseBody {
-  type Msg = LoginResponseBody;
-  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResponseBody> {
+unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginResultBody {
+  type Msg = LoginResultBody;
+  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResultBody> {
     self.inner.ptr()
   }
 }
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtrMut for LoginResponseBodyMut<'_> {
-  type Msg = LoginResponseBody;
-  fn get_ptr_mut(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResponseBody> {
+unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtrMut for LoginResultBodyMut<'_> {
+  type Msg = LoginResultBody;
+  fn get_ptr_mut(&mut self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResultBody> {
     self.inner.ptr_mut()
   }
 }
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginResponseBodyMut<'_> {
-  type Msg = LoginResponseBody;
-  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResponseBody> {
+unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginResultBodyMut<'_> {
+  type Msg = LoginResultBody;
+  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResultBody> {
     self.inner.ptr()
   }
 }
-unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginResponseBodyView<'_> {
-  type Msg = LoginResponseBody;
-  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResponseBody> {
+unsafe impl ::protobuf::__internal::runtime::UpbGetMessagePtr for LoginResultBodyView<'_> {
+  type Msg = LoginResultBody;
+  fn get_ptr(&self, _private: ::protobuf::__internal::Private) -> ::protobuf::__internal::runtime::MessagePtr<LoginResultBody> {
     self.inner.ptr()
   }
 }
 
-unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginResponseBodyMut<'_> {
+unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginResultBodyMut<'_> {
   fn get_arena(&mut self, _private: ::protobuf::__internal::Private) -> &::protobuf::__internal::runtime::Arena {
     self.inner.arena()
   }
@@ -3431,10 +2872,10 @@ unsafe impl ::protobuf::__internal::runtime::UpbGetArena for LoginResponseBodyMu
 
 
 // upb kernel doesn't support any owned message or message mut interop.
-impl ::protobuf::OwnedMessageInterop for LoginResponseBody {}
-impl<'a> ::protobuf::MessageMutInterop<'a> for LoginResponseBodyMut<'a> {}
+impl ::protobuf::OwnedMessageInterop for LoginResultBody {}
+impl<'a> ::protobuf::MessageMutInterop<'a> for LoginResultBodyMut<'a> {}
 
-impl<'a> ::protobuf::MessageViewInterop<'a> for LoginResponseBodyView<'a> {
+impl<'a> ::protobuf::MessageViewInterop<'a> for LoginResultBodyView<'a> {
   unsafe fn __unstable_wrap_raw_message(
     msg: &'a *const ::std::ffi::c_void) -> Self {
     let raw = ::protobuf::__internal::runtime::RawMessage::new(*msg as *mut _).unwrap();
@@ -5330,17 +4771,6 @@ impl<'msg> LogoutNotificationBodyView<'msg> {
     }
   }
 
-  // username: optional string
-  pub fn username(self) -> ::protobuf::View<'msg, ::protobuf::ProtoString> {
-    let str_view = unsafe {
-      self.inner.ptr().get_string_at_index(
-        1, (b"").into()
-      )
-    };
-    // SAFETY: The runtime doesn't require ProtoStr to be UTF-8.
-    unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
-  }
-
 }
 
 // SAFETY:
@@ -5520,32 +4950,6 @@ impl<'msg> LogoutNotificationBodyMut<'msg> {
     }
   }
 
-  // username: optional string
-  pub fn username(&self) -> ::protobuf::View<'_, ::protobuf::ProtoString> {
-    let str_view = unsafe {
-      self.inner.ptr().get_string_at_index(
-        1, (b"").into()
-      )
-    };
-    // SAFETY: The runtime doesn't require ProtoStr to be UTF-8.
-    unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
-  }
-  pub fn set_username(&mut self, val: impl ::protobuf::IntoProxied<::protobuf::ProtoString>) {
-    let s = val.into_proxied(::protobuf::__internal::Private);
-    let (view, arena) =
-      s.into_inner(::protobuf::__internal::Private).into_raw_parts();
-
-    let parent_arena = self.inner.arena();
-    parent_arena.fuse(&arena);
-
-    unsafe {
-      self.inner.ptr_mut().set_base_field_string_at_index(
-        1,
-        view,
-      );
-    }
-  }
-
 }
 
 // SAFETY:
@@ -5659,32 +5063,6 @@ impl LogoutNotificationBody {
     }
   }
 
-  // username: optional string
-  pub fn username(&self) -> ::protobuf::View<'_, ::protobuf::ProtoString> {
-    let str_view = unsafe {
-      self.inner.ptr().get_string_at_index(
-        1, (b"").into()
-      )
-    };
-    // SAFETY: The runtime doesn't require ProtoStr to be UTF-8.
-    unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
-  }
-  pub fn set_username(&mut self, val: impl ::protobuf::IntoProxied<::protobuf::ProtoString>) {
-    let s = val.into_proxied(::protobuf::__internal::Private);
-    let (view, arena) =
-      s.into_inner(::protobuf::__internal::Private).into_raw_parts();
-
-    let parent_arena = self.inner.arena();
-    parent_arena.fuse(&arena);
-
-    unsafe {
-      self.inner.ptr_mut().set_base_field_string_at_index(
-        1,
-        view,
-      );
-    }
-  }
-
 }  // impl LogoutNotificationBody
 
 impl ::std::ops::Drop for LogoutNotificationBody {
@@ -5719,8 +5097,8 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LogoutNotif
     ONCE_LOCK.get_or_init(|| unsafe {
       super::Proto__LogoutNotificationBody_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$,P1X".as_ptr(),
-              5,
+              "$,P".as_ptr(),
+              3,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
@@ -6807,16 +6185,14 @@ pub struct LoginPacketType(i32);
 
 #[allow(non_upper_case_globals)]
 impl LoginPacketType {
-  pub const Loginrequest: LoginPacketType = LoginPacketType(0);
-  pub const Loginresponse: LoginPacketType = LoginPacketType(1);
-  pub const Loginnotification: LoginPacketType = LoginPacketType(2);
+  pub const Loginresult: LoginPacketType = LoginPacketType(0);
+  pub const Loginnotification: LoginPacketType = LoginPacketType(1);
 
   fn constant_name(&self) -> ::std::option::Option<&'static str> {
     #[allow(unreachable_patterns)] // In the case of aliases, just emit them all and let the first one match.
     Some(match self.0 {
-      0 => "Loginrequest",
-      1 => "Loginresponse",
-      2 => "Loginnotification",
+      0 => "Loginresult",
+      1 => "Loginnotification",
       _ => return None
     })
   }
@@ -6948,7 +6324,7 @@ unsafe impl ::protobuf::__internal::Enum for LoginPacketType {
   const NAME: &'static str = "LoginPacketType";
 
   fn is_known(value: i32) -> bool {
-    matches!(value, 0|1|2)
+    matches!(value, 0|1)
   }
 }
 
