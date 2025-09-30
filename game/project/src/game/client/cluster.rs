@@ -6,6 +6,7 @@ use protobuf::ClearAndParse;
 
 use crate::entity::{entity::Entity, player::Player};
 
+use crate::game::client::command;
 use crate::game::client::command::CommandTrait;
 use crate::proto;
 use protobuf::Serialize;
@@ -31,7 +32,7 @@ impl Cluster {
     }
 
     pub fn process_packets(&mut self) {
-        let messages = self.tcp.get_recv_messages();
+        let messages = self.tcp.into_recv_messages();
         for msg in messages {
             match msg.category() {
                 crate::proto::packet::CategoryOneof::LogoutPacketType(
@@ -60,6 +61,14 @@ impl Cluster {
                 crate::proto::packet::CategoryOneof::TextMessageType(
                     crate::proto::TextMessageType::Messagechatsend,
                 ) => { // テキストチャット
+                    let mut chat_packet = crate::proto::ChatMessageBody::new();
+                    let parsed = chat_packet.clear_and_parse(&msg.payload());
+                    if parsed.is_err() {
+                        println!("Failed to parse ChatSendBody: {:?}", parsed.err());
+                        continue;
+                    }
+                    let message = chat_packet.message().to_string();
+                    print!("Player {} says: {}\n", self.player.id(), message);
                 }
                 _ => {
                     // 不明なパケット
@@ -77,9 +86,12 @@ impl Cluster {
         self.player.update();
 
         if self.tcp.check_error() {
-            self.command_buffers.push(
-                Box::new(DisconnectForceCommand::new(self.player.id()))
-            );
+            self.command_buffers
+                .push(Box::new(DisconnectForceCommand::new(self.player.id())));
+        }
+        if self.tcp.is_disconnected() {
+            self.command_buffers
+                .push(Box::new(command::LogoutRequestCommand::new(self.player.id())));
         }
     }
 
@@ -97,12 +109,12 @@ impl Cluster {
     }
 
     pub fn on_accepted(&mut self) {
-            let mut notify_packet = crate::proto::Packet::new();
-            notify_packet.set_loginPacketType(crate::proto::LoginPacketType::Loginresult); // パケットタイプ
-            let mut payload = crate::proto::LoginResultBody::new();
-            payload.set_userId(self.player.id());
-            notify_packet.set_payload(payload.serialize().unwrap()); // 中身
-            self.tcp.stack_packet(notify_packet);
+        let mut notify_packet = crate::proto::Packet::new();
+        notify_packet.set_loginPacketType(crate::proto::LoginPacketType::Loginresult); // パケットタイプ
+        let mut payload = crate::proto::LoginResultBody::new();
+        payload.set_userId(self.player.id());
+        notify_packet.set_payload(payload.serialize().unwrap()); // 中身
+        self.tcp.stack_packet(notify_packet);
     }
 
     pub fn id(&self) -> u64 {

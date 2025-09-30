@@ -26,6 +26,8 @@ pub struct TcpClient {
 
     recv_buffer: receive_buffer::ReceiveBuffer,
     error_counter: Arc<Mutex<u32>>,
+
+    is_disconnected: bool,
 }
 
 impl TcpClient {
@@ -40,6 +42,7 @@ impl TcpClient {
             send_messages: LinkedList::new(),
             recv_buffer: receive_buffer::ReceiveBuffer::new(),
             error_counter: Arc::new(Mutex::new(0)),
+            is_disconnected: false,
         }
     }
 
@@ -84,6 +87,7 @@ impl TcpClient {
                     return;
                 }
                 *error_count.unwrap() = 0; // エラーカウンタをリセット
+                self.send_messages.clear(); // 送信成功したので送信バッファをクリア
             }
             Err(e) => {
                 match e.kind() {
@@ -104,20 +108,32 @@ impl TcpClient {
 
     pub async fn recv(&mut self) {
         // 受信チェック
-        if self.recv_stream.readable().await.is_err() {
-            return;
-        }
+        // if self.recv_stream.readable().await.is_err() {
+        //     return;
+        // }
         // ---------- 受信処理 ----------
         let mut temp_buffer = vec![0u8; 4096];
         let result = self.recv_stream.try_read(&mut temp_buffer);
         if result.is_err() {
-            println!("Failed to read from stream: {:?}", result.err());
+            let error_opt = result.err();
+            if let Some(error) = error_opt {
+                if error.kind() != ErrorKind::WouldBlock {
+                    println!("Failed to receive data: {:?}", error);
+                    let error_count = self.error_counter.try_lock();
+                    if error_count.is_err() {
+                        println!("Failed to lock error counter: {:?}", error_count.err());
+                        return; // Exit if we can't lock the error counter
+                    }
+                    *error_count.unwrap() += 1;
+                }
+            }
             return;
         }
         let bytes_read = result.unwrap();
         if bytes_read == 0 {
             // 接続終了
             println!("Connection closed by peer");
+            self.is_disconnected = true;
             return;
         }
 
@@ -140,7 +156,12 @@ impl TcpClient {
         false // No error, keep the connection open
     }
 
-    pub fn get_recv_messages(&self) -> &Vec<crate::proto::Packet> {
-        &self.recv_messages
+    pub fn into_recv_messages(&mut self) -> Vec<crate::proto::Packet> {
+        let result = std::mem::take(&mut self.recv_messages);
+        return result;
+    }
+
+    pub fn is_disconnected(&self) -> bool {
+        self.is_disconnected
     }
 }

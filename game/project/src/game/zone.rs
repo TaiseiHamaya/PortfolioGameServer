@@ -65,14 +65,14 @@ impl Zone {
         // コマンド処理
         self.execute_client_commands();
 
-        // パケット送信
-        self.send_all().await;
-
         // クライアント追加/削除処理
         self.add_client_accepted();
         self.remove_client_chashed();
         // チャッシュクリア
         self.zone_request_chash.clear();
+
+        // パケット送信
+        self.send_all().await;
     }
 
     async fn recv_all(&mut self) {
