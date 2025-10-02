@@ -35,3 +35,20 @@ impl CommandTrait for DisconnectForceCommand {
         zone.dissconnect_client_force(&self.player_id);
     }
 }
+
+pub struct ChatBroadcastCommand {
+    id: u64,
+    message: String,
+}
+
+impl ChatBroadcastCommand {
+    pub fn new(id: u64, message: String) -> Self {
+        ChatBroadcastCommand { id, message }
+    }
+}
+
+impl CommandTrait for ChatBroadcastCommand {
+    fn execute(&self, zone: &mut zone::Zone) {
+        zone.broadcast_chat_message(self.id, &self.message);
+    }
+}

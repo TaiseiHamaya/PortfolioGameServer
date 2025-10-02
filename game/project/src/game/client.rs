@@ -6,4 +6,3 @@ mod receive_buffer;
 pub use command::*;
 pub use tcp_client::*;
 pub use cluster::*;
-pub use receive_buffer::*;

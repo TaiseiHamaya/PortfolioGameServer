@@ -69,6 +69,10 @@ impl Cluster {
                     }
                     let message = chat_packet.message().to_string();
                     print!("Player {} says: {}\n", self.player.id(), message);
+                    self.command_buffers.push(Box::new(ChatBroadcastCommand::new(
+                        self.player.id(),
+                        message,
+                    )));
                 }
                 _ => {
                     // 不明なパケット

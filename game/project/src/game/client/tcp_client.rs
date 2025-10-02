@@ -5,7 +5,7 @@ use std::{
     sync::Arc,
 };
 
-use protobuf::{ClearAndParse, Serialize};
+use protobuf::Serialize;
 use tokio::{
     net::{
         TcpStream,

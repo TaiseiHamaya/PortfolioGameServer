@@ -4,7 +4,7 @@ use crate::game::client;
 
 pub struct ZonePlayerLogin {
     pub id: u64,
-    pub clientCluster: client::Cluster,
+    pub client_cluster: client::Cluster,
 }
 pub struct ZonePlayerLogout {
     pub entity_id: u64,
@@ -29,7 +29,7 @@ impl ZoneRequestChash {
     }
 
     pub fn push_login(&mut self, client: client::Cluster) {
-        self.login_chash.push(ZonePlayerLogin { id: client.id(), clientCluster: client });
+        self.login_chash.push(ZonePlayerLogin { id: client.id(), client_cluster: client });
     }
 
     pub fn push_logout(&mut self, id: u64) {

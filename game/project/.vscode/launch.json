@@ -8,15 +8,15 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug executable 'PortfolioProject'",
+			"name": "Debug executable 'ZoneServer'",
 			"cargo": {
 				"args": [
 					"build",
-					"--bin=PortfolioProject",
-					"--package=PortfolioProject"
+					"--bin=ZoneServer",
+					"--package=ZoneServer"
 				],
 				"filter": {
-					"name": "PortfolioProject",
+					"name": "ZoneServer",
 					"kind": "bin"
 				}
 			},
@@ -26,16 +26,16 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug unit tests in executable 'PortfolioProject'",
+			"name": "Debug unit tests in executable 'ZoneServer'",
 			"cargo": {
 				"args": [
 					"test",
 					"--no-run",
-					"--bin=PortfolioProject",
-					"--package=PortfolioProject"
+					"--bin=ZoneServer",
+					"--package=ZoneServer"
 				],
 				"filter": {
-					"name": "PortfolioProject",
+					"name": "ZoneServer",
 					"kind": "bin"
 				}
 			},

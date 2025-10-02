@@ -11,7 +11,11 @@
       },
       "extensions": [
         "dustypomerleau.rust-syntax",
-        "rust-lang.rust-analyzer"
+        "rust-lang.rust-analyzer",
+        "fill-labs.dependi",
+        "vadimcn.vscode-lldb",
+        "tamasfe.even-better-toml",
+        "MS-CEINTL.vscode-language-pack-ja"
       ]
     }
   },

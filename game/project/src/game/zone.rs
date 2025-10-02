@@ -130,8 +130,8 @@ impl Zone {
         // プレイヤー追加/削除処理
         let login_chash = self.zone_request_chash.get_login_chash_take();
         login_chash.into_iter().for_each(|mut login| {
-            login.clientCluster.on_accepted();
-            self.players.insert(login.id, login.clientCluster);
+            login.client_cluster.on_accepted();
+            self.players.insert(login.id, login.client_cluster);
         });
     }
 
@@ -208,5 +208,21 @@ impl Zone {
                 });
             }
         }
+    }
+
+    pub fn broadcast_chat_message(&mut self, id: u64, message: &str) {
+        let mut packet = crate::proto::Packet::new();
+        packet.set_textMessageType(crate::proto::TextMessageType::Messagechatreceive);
+        let mut body = crate::proto::ChatMessageBody::new();
+        body.set_userId(id);
+        body.set_message(message.to_string());
+        let payload = body.serialize();
+        if payload.is_err() {
+            return;
+        }
+        packet.set_payload(payload.unwrap());
+        self.players.iter_mut().for_each(|(_, cluster)| {
+            cluster.stack_packet(packet.clone());
+        });
     }
 }
