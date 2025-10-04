@@ -2,13 +2,14 @@ use std::collections::HashMap;
 use std::task::{Context, Poll};
 
 use futures::{StreamExt, stream};
+use log;
 use tokio::net::TcpListener;
 
 use nalgebra::Point3;
 
 use super::client::TcpClient;
 use super::zone_request_chash::ZoneRequestChash;
-use crate::containts::containts_director::ContaintsDirector;
+use crate::contents::containts_director::ContaintsDirector;
 use crate::entity::player::Player;
 
 use crate::game::client::{self, CommandTrait};
@@ -89,22 +90,23 @@ impl Zone {
         match self.tcp_listener.poll_accept(&mut cx) {
             Poll::Ready(Ok((stream, addr))) => {
                 // 後でDB接続に変える
-                println!("Accepted connection from {}", addr);
+                log::info!("Accepted connection from {}", addr);
                 let player_id = self.players.len() as u64;
+                let player_name = format!("Player{}", player_id);
+
                 let position = Point3::new(0.0, 0.0, -10.0); // 初期位置は(0, 0, -10)
                 let player = Player::new(player_id, position, 10000);
-                let client_cluster = client::Cluster::new(player, TcpClient::new(stream, addr));
+                let client_cluster =
+                    client::Cluster::new(player, player_name.clone(), TcpClient::new(stream, addr));
 
                 // ログイン要求をチャッシュに追加
                 self.zone_request_chash.push_login(client_cluster);
-
-                let player_name = format!("Player{}", player_id);
 
                 // 既存プレイヤーに通知するパケットを作成
                 let mut notify_packet = crate::proto::Packet::new();
                 notify_packet.set_loginPacketType(crate::proto::LoginPacketType::Loginnotification); // パケットタイプ
                 let mut payload: LoginNotificationBody = crate::proto::LoginNotificationBody::new();
-                payload.set_userId(player_id);
+                payload.set_id(player_id);
                 payload.set_username(player_name);
                 notify_packet.set_payload(payload.serialize().unwrap()); // 中身
 
@@ -114,7 +116,7 @@ impl Zone {
                 });
             }
             Poll::Ready(Err(e)) => {
-                eprintln!("Accept error: {} (Zone: {})", e, self.name);
+                log::error!("Accept error: {} (Zone: {})", e, self.name);
             }
             Poll::Pending => {}
         }
@@ -126,11 +128,25 @@ impl Zone {
         });
     }
 
+    // プレイヤー追加
     fn add_client_accepted(&mut self) {
-        // プレイヤー追加/削除処理
-        let login_chash = self.zone_request_chash.get_login_chash_take();
-        login_chash.into_iter().for_each(|mut login| {
+        let mut login_chash = self.zone_request_chash.get_login_chash_take();
+        login_chash.iter_mut().for_each(|login| {
+            // 接続完了通知
             login.client_cluster.on_accepted();
+            // 接続したクライアントに既存プレイヤーの情報を送信
+            self.players.iter_mut().for_each(|(id, cluster)| {
+                let mut packet = crate::proto::Packet::new();
+                packet.set_loginPacketType(LoginPacketType::Loginnotification);
+                let mut body = LoginNotificationBody::new();
+                body.set_id(*id);
+                body.set_username(cluster.player_name().clone());
+                packet.set_payload(body.serialize().unwrap());
+                // パケットを積む
+                login.client_cluster.stack_packet(packet);
+            });
+        });
+        login_chash.into_iter().for_each(|mut login| {
             self.players.insert(login.id, login.client_cluster);
         });
     }
@@ -157,6 +173,8 @@ impl Zone {
 
     // クライアントからの切断要求
     pub fn dissconnect_request(&mut self, player_id: &u64) {
+        log::info!("Player {} requested disconnection.", player_id);
+        // ログアウト要求をチャッシュに追加
         self.zone_request_chash.push_logout(*player_id);
         // パケット送信
         // 要求を受けたクライアントに切断パケットを送信
@@ -179,7 +197,7 @@ impl Zone {
             let mut packet = crate::proto::Packet::new();
             packet.set_logoutPacketType(crate::proto::LogoutPacketType::Logoutnotification);
             let mut body = crate::proto::LogoutNotificationBody::new();
-            body.set_userId(*player_id);
+            body.set_id(*player_id);
             let payload = body.serialize();
             if payload.is_ok() {
                 packet.set_payload(payload.unwrap());
@@ -192,6 +210,8 @@ impl Zone {
 
     // サーバーからエラーとして切断
     pub fn dissconnect_client_force(&mut self, player_id: &u64) {
+        log::info!("Forcefully disconnecting player {}.", player_id);
+        // ログアウト要求をチャッシュに追加
         self.zone_request_chash.push_logout(*player_id);
 
         // 既存プレイヤーに通知するパケットを作成
@@ -199,7 +219,7 @@ impl Zone {
             let mut packet = crate::proto::Packet::new();
             packet.set_logoutPacketType(crate::proto::LogoutPacketType::Logoutnotification);
             let mut body = crate::proto::LogoutNotificationBody::new();
-            body.set_userId(*player_id);
+            body.set_id(*player_id);
             let payload = body.serialize();
             if payload.is_ok() {
                 packet.set_payload(payload.unwrap());
@@ -210,11 +230,13 @@ impl Zone {
         }
     }
 
+    // チャットメッセージを全員に送信
     pub fn broadcast_chat_message(&mut self, id: u64, message: &str) {
+        log::info!("Broadcasting chat message from {}: {}", id, message);
         let mut packet = crate::proto::Packet::new();
         packet.set_textMessageType(crate::proto::TextMessageType::Messagechatreceive);
         let mut body = crate::proto::ChatMessageBody::new();
-        body.set_userId(id);
+        body.set_id(id);
         body.set_message(message.to_string());
         let payload = body.serialize();
         if payload.is_err() {
@@ -222,6 +244,37 @@ impl Zone {
         }
         packet.set_payload(payload.unwrap());
         self.players.iter_mut().for_each(|(_, cluster)| {
+            cluster.stack_packet(packet.clone());
+        });
+    }
+
+    // 位置の同期をクライアントに通知
+    pub fn sync_entity_transform(&mut self, entity_id: u64, timestamp: u64, position: Point3<f32>) {
+        log::info!(
+            "Syncing position for entity | {} | {:?} | {:?}",
+            entity_id,
+            timestamp,
+            position
+        );
+        let mut packet = crate::proto::Packet::new();
+        packet.set_syncPacketType(crate::proto::SyncPacketType::Synctransform);
+        let mut body = crate::proto::TransformSyncBody::new();
+        body.set_id(entity_id);
+        body.set_timestamp(timestamp);
+        let mut pos = crate::proto::Vector3::new();
+        pos.set_x(position.x);
+        pos.set_y(position.y);
+        pos.set_z(position.z);
+        body.set_position(pos);
+        let payload = body.serialize();
+        if payload.is_err() {
+            return;
+        }
+        packet.set_payload(payload.unwrap());
+        self.players.iter_mut().for_each(|(player_id, cluster)| {
+            if entity_id == *player_id {
+                return; // 自分には送らない
+            }
             cluster.stack_packet(packet.clone());
         });
     }

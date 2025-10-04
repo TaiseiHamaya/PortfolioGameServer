@@ -1,6 +1,9 @@
 use super::command::*;
 use super::tcp_client::*;
 
+use chrono::NaiveTime;
+use futures::executor::EnterError;
+use log;
 use nalgebra::Point3;
 use protobuf::ClearAndParse;
 
@@ -13,15 +16,17 @@ use protobuf::Serialize;
 
 pub struct Cluster {
     player: Player,
+    name: String,
     tcp: TcpClient,
 
     command_buffers: Vec<Box<dyn CommandTrait>>,
 }
 
 impl Cluster {
-    pub fn new(player: Player, tcp: TcpClient) -> Self {
+    pub fn new(player: Player, name: String, tcp: TcpClient) -> Self {
         Cluster {
             player,
+            name,
             tcp,
             command_buffers: Vec::new(),
         }
@@ -49,14 +54,23 @@ impl Cluster {
                     let mut transform_packet = crate::proto::TransformSyncBody::new();
                     let parsed = transform_packet.clear_and_parse(&msg.payload());
                     if parsed.is_err() {
-                        println!("Failed to parse TransformSyncBody: {:?}", parsed.err());
+                        log::error!("Failed to parse TransformSyncBody: {:?}", parsed.err());
                         continue;
                     }
+                    let player_id = self.player.id();
+                    let timestamp = transform_packet.timestamp();
                     let position = transform_packet.position();
-                    let rotation = transform_packet.rotation();
+
 
                     let player_position = self.player.position_mut();
                     *player_position = Point3::new(position.x(), position.y(), position.z());
+
+                    self.command_buffers
+                        .push(Box::new(TransformSyncCommand::new(
+                            player_id,
+                            timestamp,
+                            *player_position,
+                        )));
                 }
                 crate::proto::packet::CategoryOneof::TextMessageType(
                     crate::proto::TextMessageType::Messagechatsend,
@@ -64,11 +78,11 @@ impl Cluster {
                     let mut chat_packet = crate::proto::ChatMessageBody::new();
                     let parsed = chat_packet.clear_and_parse(&msg.payload());
                     if parsed.is_err() {
-                        println!("Failed to parse ChatSendBody: {:?}", parsed.err());
+                        log::error!("Failed to parse ChatSendBody: {:?}", parsed.err());
                         continue;
                     }
                     let message = chat_packet.message().to_string();
-                    print!("Player {} says: {}\n", self.player.id(), message);
+                    log::info!("Player {} says: {}", self.player.id(), message);
                     self.command_buffers.push(Box::new(ChatBroadcastCommand::new(
                         self.player.id(),
                         message,
@@ -116,12 +130,18 @@ impl Cluster {
         let mut notify_packet = crate::proto::Packet::new();
         notify_packet.set_loginPacketType(crate::proto::LoginPacketType::Loginresult); // パケットタイプ
         let mut payload = crate::proto::LoginResultBody::new();
-        payload.set_userId(self.player.id());
+        payload.set_id(self.player.id());
+        payload.set_isSuccessed(true);
+        payload.set_username(self.name.clone());
         notify_packet.set_payload(payload.serialize().unwrap()); // 中身
         self.tcp.stack_packet(notify_packet);
     }
 
     pub fn id(&self) -> u64 {
         self.player.id()
+    }
+
+    pub fn player_name(&self) -> &String {
+        &self.name
     }
 }

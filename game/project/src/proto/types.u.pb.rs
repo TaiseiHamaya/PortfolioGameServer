@@ -1213,8 +1213,8 @@ impl<'msg> ChatMessageBodyView<'msg> {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
-  // userId: optional uint64
-  pub fn userId(self) -> u64 {
+  // id: optional uint64
+  pub fn id(self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -1392,8 +1392,8 @@ impl<'msg> ChatMessageBodyMut<'msg> {
     self.inner.arena()
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -1406,7 +1406,7 @@ impl<'msg> ChatMessageBodyMut<'msg> {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -1531,8 +1531,8 @@ impl ChatMessageBody {
     ChatMessageBodyMut::new(::protobuf::__internal::Private, inner)
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -1545,7 +1545,7 @@ impl ChatMessageBody {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -2390,8 +2390,8 @@ impl<'msg> LoginResultBodyView<'msg> {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
-  // userId: optional uint64
-  pub fn userId(self) -> u64 {
+  // id: optional uint64
+  pub fn id(self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -2418,6 +2418,17 @@ impl<'msg> LoginResultBodyView<'msg> {
         1, (false).into()
       ).try_into().unwrap()
     }
+  }
+
+  // username: optional string
+  pub fn username(self) -> ::protobuf::View<'msg, ::protobuf::ProtoString> {
+    let str_view = unsafe {
+      self.inner.ptr().get_string_at_index(
+        2, (b"").into()
+      )
+    };
+    // SAFETY: The runtime doesn't require ProtoStr to be UTF-8.
+    unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
   }
 
 }
@@ -2573,8 +2584,8 @@ impl<'msg> LoginResultBodyMut<'msg> {
     self.inner.arena()
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -2587,7 +2598,7 @@ impl<'msg> LoginResultBodyMut<'msg> {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -2622,6 +2633,32 @@ impl<'msg> LoginResultBodyMut<'msg> {
       self.inner.ptr_mut().set_base_field_bool_at_index(
         1, val.into()
       )
+    }
+  }
+
+  // username: optional string
+  pub fn username(&self) -> ::protobuf::View<'_, ::protobuf::ProtoString> {
+    let str_view = unsafe {
+      self.inner.ptr().get_string_at_index(
+        2, (b"").into()
+      )
+    };
+    // SAFETY: The runtime doesn't require ProtoStr to be UTF-8.
+    unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
+  }
+  pub fn set_username(&mut self, val: impl ::protobuf::IntoProxied<::protobuf::ProtoString>) {
+    let s = val.into_proxied(::protobuf::__internal::Private);
+    let (view, arena) =
+      s.into_inner(::protobuf::__internal::Private).into_raw_parts();
+
+    let parent_arena = self.inner.arena();
+    parent_arena.fuse(&arena);
+
+    unsafe {
+      self.inner.ptr_mut().set_base_field_string_at_index(
+        2,
+        view,
+      );
     }
   }
 
@@ -2712,8 +2749,8 @@ impl LoginResultBody {
     LoginResultBodyMut::new(::protobuf::__internal::Private, inner)
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -2726,7 +2763,7 @@ impl LoginResultBody {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -2764,6 +2801,32 @@ impl LoginResultBody {
     }
   }
 
+  // username: optional string
+  pub fn username(&self) -> ::protobuf::View<'_, ::protobuf::ProtoString> {
+    let str_view = unsafe {
+      self.inner.ptr().get_string_at_index(
+        2, (b"").into()
+      )
+    };
+    // SAFETY: The runtime doesn't require ProtoStr to be UTF-8.
+    unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
+  }
+  pub fn set_username(&mut self, val: impl ::protobuf::IntoProxied<::protobuf::ProtoString>) {
+    let s = val.into_proxied(::protobuf::__internal::Private);
+    let (view, arena) =
+      s.into_inner(::protobuf::__internal::Private).into_raw_parts();
+
+    let parent_arena = self.inner.arena();
+    parent_arena.fuse(&arena);
+
+    unsafe {
+      self.inner.ptr_mut().set_base_field_string_at_index(
+        2,
+        view,
+      );
+    }
+  }
+
 }  // impl LoginResultBody
 
 impl ::std::ops::Drop for LoginResultBody {
@@ -2798,8 +2861,8 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResult
     ONCE_LOCK.get_or_init(|| unsafe {
       super::Proto__LoginResultBody_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$,P/P".as_ptr(),
-              5,
+              "$,P/P1X".as_ptr(),
+              7,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
@@ -3016,8 +3079,8 @@ impl<'msg> LoginNotificationBodyView<'msg> {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
-  // userId: optional uint64
-  pub fn userId(self) -> u64 {
+  // id: optional uint64
+  pub fn id(self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -3195,8 +3258,8 @@ impl<'msg> LoginNotificationBodyMut<'msg> {
     self.inner.arena()
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -3209,7 +3272,7 @@ impl<'msg> LoginNotificationBodyMut<'msg> {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -3334,8 +3397,8 @@ impl LoginNotificationBody {
     LoginNotificationBodyMut::new(::protobuf::__internal::Private, inner)
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -3348,7 +3411,7 @@ impl LoginNotificationBody {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -3638,8 +3701,8 @@ impl<'msg> LogoutRequestBodyView<'msg> {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
-  // userId: optional uint64
-  pub fn userId(self) -> u64 {
+  // id: optional uint64
+  pub fn id(self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -3806,8 +3869,8 @@ impl<'msg> LogoutRequestBodyMut<'msg> {
     self.inner.arena()
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -3820,7 +3883,7 @@ impl<'msg> LogoutRequestBodyMut<'msg> {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -3919,8 +3982,8 @@ impl LogoutRequestBody {
     LogoutRequestBodyMut::new(::protobuf::__internal::Private, inner)
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -3933,7 +3996,7 @@ impl LogoutRequestBody {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -4756,8 +4819,8 @@ impl<'msg> LogoutNotificationBodyView<'msg> {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
-  // userId: optional uint64
-  pub fn userId(self) -> u64 {
+  // id: optional uint64
+  pub fn id(self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -4924,8 +4987,8 @@ impl<'msg> LogoutNotificationBodyMut<'msg> {
     self.inner.arena()
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -4938,7 +5001,7 @@ impl<'msg> LogoutNotificationBodyMut<'msg> {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -5037,8 +5100,8 @@ impl LogoutNotificationBody {
     LogoutNotificationBodyMut::new(::protobuf::__internal::Private, inner)
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -5051,7 +5114,7 @@ impl LogoutNotificationBody {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -5315,8 +5378,8 @@ impl<'msg> TransformSyncBodyView<'msg> {
     ::protobuf::IntoProxied::into_proxied(*self, ::protobuf::__internal::Private)
   }
 
-  // userId: optional uint64
-  pub fn userId(self) -> u64 {
+  // id: optional uint64
+  pub fn id(self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -5330,10 +5393,25 @@ impl<'msg> TransformSyncBodyView<'msg> {
     }
   }
 
+  // timestamp: optional uint64
+  pub fn timestamp(self) -> u64 {
+    unsafe {
+      // TODO: b/361751487: This .into() and .try_into() is only
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      // perfectly (and do an unchecked conversion for
+      // i32->enum types, since even for closed enums we trust
+      // upb to only return one of the named values).
+      self.inner.ptr().get_u64_at_index(
+        1, (0u64).into()
+      ).try_into().unwrap()
+    }
+  }
+
   // position: optional message Proto.Vector3
   pub fn has_position(self) -> bool {
     unsafe {
-      self.inner.ptr().has_field_at_index(1)
+      self.inner.ptr().has_field_at_index(2)
     }
   }
   pub fn position_opt(self) -> ::protobuf::Optional<super::Vector3View<'msg>> {
@@ -5341,29 +5419,11 @@ impl<'msg> TransformSyncBodyView<'msg> {
   }
   pub fn position(self) -> super::Vector3View<'msg> {
     let submsg = unsafe {
-      self.inner.ptr().get_message_at_index(1)
-    };
-    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
-    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-    super::Vector3View::new(::protobuf::__internal::Private, inner)
-  }
-
-  // rotation: optional message Proto.Quaternion
-  pub fn has_rotation(self) -> bool {
-    unsafe {
-      self.inner.ptr().has_field_at_index(2)
-    }
-  }
-  pub fn rotation_opt(self) -> ::protobuf::Optional<super::QuaternionView<'msg>> {
-        ::protobuf::Optional::new(self.rotation(), self.has_rotation())
-  }
-  pub fn rotation(self) -> super::QuaternionView<'msg> {
-    let submsg = unsafe {
       self.inner.ptr().get_message_at_index(2)
     };
     let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
     let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-    super::QuaternionView::new(::protobuf::__internal::Private, inner)
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
   }
 
 }
@@ -5519,8 +5579,8 @@ impl<'msg> TransformSyncBodyMut<'msg> {
     self.inner.arena()
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -5533,7 +5593,7 @@ impl<'msg> TransformSyncBodyMut<'msg> {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -5545,16 +5605,42 @@ impl<'msg> TransformSyncBodyMut<'msg> {
     }
   }
 
+  // timestamp: optional uint64
+  pub fn timestamp(&self) -> u64 {
+    unsafe {
+      // TODO: b/361751487: This .into() and .try_into() is only
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      // perfectly (and do an unchecked conversion for
+      // i32->enum types, since even for closed enums we trust
+      // upb to only return one of the named values).
+      self.inner.ptr().get_u64_at_index(
+        1, (0u64).into()
+      ).try_into().unwrap()
+    }
+  }
+  pub fn set_timestamp(&mut self, val: u64) {
+    unsafe {
+      // TODO: b/361751487: This .into() is only here
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      //perfectly.
+      self.inner.ptr_mut().set_base_field_u64_at_index(
+        1, val.into()
+      )
+    }
+  }
+
   // position: optional message Proto.Vector3
   pub fn has_position(&self) -> bool {
     unsafe {
-      self.inner.ptr().has_field_at_index(1)
+      self.inner.ptr().has_field_at_index(2)
     }
   }
   pub fn clear_position(&mut self) {
     unsafe {
       self.inner.ptr().clear_field_at_index(
-        1
+        2
       );
     }
   }
@@ -5563,7 +5649,7 @@ impl<'msg> TransformSyncBodyMut<'msg> {
   }
   pub fn position(&self) -> super::Vector3View<'_> {
     let submsg = unsafe {
-      self.inner.ptr().get_message_at_index(1)
+      self.inner.ptr().get_message_at_index(2)
     };
     let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
     let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
@@ -5572,7 +5658,7 @@ impl<'msg> TransformSyncBodyMut<'msg> {
   pub fn position_mut(&mut self) -> super::Vector3Mut<'_> {
      let ptr = unsafe {
        self.inner.ptr_mut().get_or_create_mutable_message_at_index(
-         1, self.arena()
+         2, self.arena()
        ).unwrap()
      };
      super::Vector3Mut::from_parent(
@@ -5582,60 +5668,6 @@ impl<'msg> TransformSyncBodyMut<'msg> {
   }
   pub fn set_position(&mut self,
     val: impl ::protobuf::IntoProxied<super::Vector3>) {
-
-    // The message and arena are dropped after the setter. The
-    // memory remains allocated as we fuse the arena with the
-    // parent message's arena.
-    let mut child = val.into_proxied(::protobuf::__internal::Private);
-    self.inner
-      .arena()
-      .fuse(::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut child, ::protobuf::__internal::Private));
-
-    let child_ptr = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_ptr_mut(&mut child, ::protobuf::__internal::Private);
-    unsafe {
-      self.inner.ptr_mut().set_base_field_message_at_index(
-        1, child_ptr
-      );
-    }
-  }
-
-  // rotation: optional message Proto.Quaternion
-  pub fn has_rotation(&self) -> bool {
-    unsafe {
-      self.inner.ptr().has_field_at_index(2)
-    }
-  }
-  pub fn clear_rotation(&mut self) {
-    unsafe {
-      self.inner.ptr().clear_field_at_index(
-        2
-      );
-    }
-  }
-  pub fn rotation_opt(&self) -> ::protobuf::Optional<super::QuaternionView<'_>> {
-        ::protobuf::Optional::new(self.rotation(), self.has_rotation())
-  }
-  pub fn rotation(&self) -> super::QuaternionView<'_> {
-    let submsg = unsafe {
-      self.inner.ptr().get_message_at_index(2)
-    };
-    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
-    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-    super::QuaternionView::new(::protobuf::__internal::Private, inner)
-  }
-  pub fn rotation_mut(&mut self) -> super::QuaternionMut<'_> {
-     let ptr = unsafe {
-       self.inner.ptr_mut().get_or_create_mutable_message_at_index(
-         2, self.arena()
-       ).unwrap()
-     };
-     super::QuaternionMut::from_parent(
-       ::protobuf::__internal::Private,
-       self.as_message_mut_inner(::protobuf::__internal::Private),
-       ptr.raw())
-  }
-  pub fn set_rotation(&mut self,
-    val: impl ::protobuf::IntoProxied<super::Quaternion>) {
 
     // The message and arena are dropped after the setter. The
     // memory remains allocated as we fuse the arena with the
@@ -5740,8 +5772,8 @@ impl TransformSyncBody {
     TransformSyncBodyMut::new(::protobuf::__internal::Private, inner)
   }
 
-  // userId: optional uint64
-  pub fn userId(&self) -> u64 {
+  // id: optional uint64
+  pub fn id(&self) -> u64 {
     unsafe {
       // TODO: b/361751487: This .into() and .try_into() is only
       // here for the enum<->i32 case, we should avoid it for
@@ -5754,7 +5786,7 @@ impl TransformSyncBody {
       ).try_into().unwrap()
     }
   }
-  pub fn set_userId(&mut self, val: u64) {
+  pub fn set_id(&mut self, val: u64) {
     unsafe {
       // TODO: b/361751487: This .into() is only here
       // here for the enum<->i32 case, we should avoid it for
@@ -5766,16 +5798,42 @@ impl TransformSyncBody {
     }
   }
 
+  // timestamp: optional uint64
+  pub fn timestamp(&self) -> u64 {
+    unsafe {
+      // TODO: b/361751487: This .into() and .try_into() is only
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      // perfectly (and do an unchecked conversion for
+      // i32->enum types, since even for closed enums we trust
+      // upb to only return one of the named values).
+      self.inner.ptr().get_u64_at_index(
+        1, (0u64).into()
+      ).try_into().unwrap()
+    }
+  }
+  pub fn set_timestamp(&mut self, val: u64) {
+    unsafe {
+      // TODO: b/361751487: This .into() is only here
+      // here for the enum<->i32 case, we should avoid it for
+      // other primitives where the types naturally match
+      //perfectly.
+      self.inner.ptr_mut().set_base_field_u64_at_index(
+        1, val.into()
+      )
+    }
+  }
+
   // position: optional message Proto.Vector3
   pub fn has_position(&self) -> bool {
     unsafe {
-      self.inner.ptr().has_field_at_index(1)
+      self.inner.ptr().has_field_at_index(2)
     }
   }
   pub fn clear_position(&mut self) {
     unsafe {
       self.inner.ptr().clear_field_at_index(
-        1
+        2
       );
     }
   }
@@ -5784,7 +5842,7 @@ impl TransformSyncBody {
   }
   pub fn position(&self) -> super::Vector3View<'_> {
     let submsg = unsafe {
-      self.inner.ptr().get_message_at_index(1)
+      self.inner.ptr().get_message_at_index(2)
     };
     let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
     let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
@@ -5793,7 +5851,7 @@ impl TransformSyncBody {
   pub fn position_mut(&mut self) -> super::Vector3Mut<'_> {
      let ptr = unsafe {
        self.inner.ptr_mut().get_or_create_mutable_message_at_index(
-         1, self.arena()
+         2, self.arena()
        ).unwrap()
      };
      super::Vector3Mut::from_parent(
@@ -5803,60 +5861,6 @@ impl TransformSyncBody {
   }
   pub fn set_position(&mut self,
     val: impl ::protobuf::IntoProxied<super::Vector3>) {
-
-    // The message and arena are dropped after the setter. The
-    // memory remains allocated as we fuse the arena with the
-    // parent message's arena.
-    let mut child = val.into_proxied(::protobuf::__internal::Private);
-    self.inner
-      .arena()
-      .fuse(::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut child, ::protobuf::__internal::Private));
-
-    let child_ptr = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_ptr_mut(&mut child, ::protobuf::__internal::Private);
-    unsafe {
-      self.inner.ptr_mut().set_base_field_message_at_index(
-        1, child_ptr
-      );
-    }
-  }
-
-  // rotation: optional message Proto.Quaternion
-  pub fn has_rotation(&self) -> bool {
-    unsafe {
-      self.inner.ptr().has_field_at_index(2)
-    }
-  }
-  pub fn clear_rotation(&mut self) {
-    unsafe {
-      self.inner.ptr().clear_field_at_index(
-        2
-      );
-    }
-  }
-  pub fn rotation_opt(&self) -> ::protobuf::Optional<super::QuaternionView<'_>> {
-        ::protobuf::Optional::new(self.rotation(), self.has_rotation())
-  }
-  pub fn rotation(&self) -> super::QuaternionView<'_> {
-    let submsg = unsafe {
-      self.inner.ptr().get_message_at_index(2)
-    };
-    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
-    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
-    super::QuaternionView::new(::protobuf::__internal::Private, inner)
-  }
-  pub fn rotation_mut(&mut self) -> super::QuaternionMut<'_> {
-     let ptr = unsafe {
-       self.inner.ptr_mut().get_or_create_mutable_message_at_index(
-         2, self.arena()
-       ).unwrap()
-     };
-     super::QuaternionMut::from_parent(
-       ::protobuf::__internal::Private,
-       self.as_message_mut_inner(::protobuf::__internal::Private),
-       ptr.raw())
-  }
-  pub fn set_rotation(&mut self,
-    val: impl ::protobuf::IntoProxied<super::Quaternion>) {
 
     // The message and arena are dropped after the setter. The
     // memory remains allocated as we fuse the arena with the
@@ -5908,13 +5912,12 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for TransformSy
     ONCE_LOCK.get_or_init(|| unsafe {
       super::Proto__TransformSyncBody_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$,P33".as_ptr(),
-              5,
+              "$,P,P3".as_ptr(),
+              6,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
         <super::Vector3 as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table(),
-        <super::Quaternion as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table(),
       ];
       let subenums = [
       ];

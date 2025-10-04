@@ -5,6 +5,7 @@ use std::{
     sync::Arc,
 };
 
+use log;
 use protobuf::Serialize;
 use tokio::{
     net::{
@@ -58,7 +59,7 @@ impl TcpClient {
         for msg in &self.send_messages {
             let buffer = msg.serialize();
             if buffer.is_err() {
-                println!("Failed to serialize message: {:?}", buffer.err());
+                log::error!("Failed to serialize message: {:?}", buffer.err());
                 continue;
             }
             let buffer = buffer.unwrap();
@@ -83,7 +84,7 @@ impl TcpClient {
             Ok(_) => {
                 let error_count = error_counter.try_lock();
                 if error_count.is_err() {
-                    println!("Failed to lock error counter: {:?}", error_count.err());
+                    log::error!("Failed to lock error counter: {:?}", error_count.err());
                     return;
                 }
                 *error_count.unwrap() = 0; // エラーカウンタをリセット
@@ -93,10 +94,10 @@ impl TcpClient {
                 match e.kind() {
                     ErrorKind::WriteZero => {}
                     _ => {
-                        println!("Failed to send messages: {:?}", e);
+                        log::error!("Failed to send messages: {:?}", e);
                         let error_count = error_counter.try_lock();
                         if error_count.is_err() {
-                            println!("Failed to lock error counter: {:?}", error_count.err());
+                            log::error!("Failed to lock error counter: {:?}", error_count.err());
                             return; // Exit if we can't lock the error counter
                         }
                         *error_count.unwrap() += 1;
@@ -118,10 +119,10 @@ impl TcpClient {
             let error_opt = result.err();
             if let Some(error) = error_opt {
                 if error.kind() != ErrorKind::WouldBlock {
-                    println!("Failed to receive data: {:?}", error);
+                    log::error!("Failed to receive data: {:?}", error);
                     let error_count = self.error_counter.try_lock();
                     if error_count.is_err() {
-                        println!("Failed to lock error counter: {:?}", error_count.err());
+                        log::error!("Failed to lock error counter: {:?}", error_count.err());
                         return; // Exit if we can't lock the error counter
                     }
                     *error_count.unwrap() += 1;
@@ -132,7 +133,7 @@ impl TcpClient {
         let bytes_read = result.unwrap();
         if bytes_read == 0 {
             // 接続終了
-            println!("Connection closed by peer");
+            log::info!("Connection closed by peer");
             self.is_disconnected = true;
             return;
         }
@@ -146,11 +147,11 @@ impl TcpClient {
     pub fn check_error(&self) -> bool {
         let error_count = self.error_counter.try_lock();
         if error_count.is_err() {
-            println!("Failed to lock error counter: {:?}", error_count.err());
+            log::error!("Failed to lock error counter: {:?}", error_count.err());
             return false; // Indicate that the connection should remain open
         }
         if *error_count.unwrap() > 100 {
-            println!("Too many errors, closing connection");
+            log::error!("Too many errors, closing connection");
             return true; // Indicate that the connection should be closed
         }
         false // No error, keep the connection open

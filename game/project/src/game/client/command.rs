@@ -1,5 +1,7 @@
 use crate::game::zone;
 
+use nalgebra::Point3;
+
 pub trait CommandTrait {
     fn execute(&self, zone: &mut zone::Zone);
 }
@@ -50,5 +52,23 @@ impl ChatBroadcastCommand {
 impl CommandTrait for ChatBroadcastCommand {
     fn execute(&self, zone: &mut zone::Zone) {
         zone.broadcast_chat_message(self.id, &self.message);
+    }
+}
+
+pub struct TransformSyncCommand {
+    player_id: u64,
+    timestamp: u64,
+    position: Point3<f32>,
+}
+
+impl TransformSyncCommand {
+    pub fn new(player_id: u64, timestamp: u64, position: Point3<f32>) -> Self {
+        TransformSyncCommand { player_id, timestamp, position }
+    }
+}
+
+impl CommandTrait for TransformSyncCommand {
+    fn execute(&self, zone: &mut zone::Zone) {
+        zone.sync_entity_transform(self.player_id, self.timestamp, self.position);
     }
 }
