@@ -18,10 +18,16 @@ pub async fn run() {
     let mut tick_count: u64 = 0;
 
     loop {
+        let now = tokio::time::Instant::now();
         let next = tokio::time::Instant::from_std(futures_ticker.next_tick());
         tokio::time::sleep_until(next).await;
 
         log::info!("Tick {} at {}", tick_count, Utc::now());
+
+        if next < now {
+            log::warn!("Tick is running behind schedule!");
+        }
+
         zone.update().await;
         tick_count += 1;
     }

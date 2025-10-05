@@ -2431,6 +2431,24 @@ impl<'msg> LoginResultBodyView<'msg> {
     unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
   }
 
+  // position: optional message Proto.Vector3
+  pub fn has_position(self) -> bool {
+    unsafe {
+      self.inner.ptr().has_field_at_index(3)
+    }
+  }
+  pub fn position_opt(self) -> ::protobuf::Optional<super::Vector3View<'msg>> {
+        ::protobuf::Optional::new(self.position(), self.has_position())
+  }
+  pub fn position(self) -> super::Vector3View<'msg> {
+    let submsg = unsafe {
+      self.inner.ptr().get_message_at_index(3)
+    };
+    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
+    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
+  }
+
 }
 
 // SAFETY:
@@ -2662,6 +2680,60 @@ impl<'msg> LoginResultBodyMut<'msg> {
     }
   }
 
+  // position: optional message Proto.Vector3
+  pub fn has_position(&self) -> bool {
+    unsafe {
+      self.inner.ptr().has_field_at_index(3)
+    }
+  }
+  pub fn clear_position(&mut self) {
+    unsafe {
+      self.inner.ptr().clear_field_at_index(
+        3
+      );
+    }
+  }
+  pub fn position_opt(&self) -> ::protobuf::Optional<super::Vector3View<'_>> {
+        ::protobuf::Optional::new(self.position(), self.has_position())
+  }
+  pub fn position(&self) -> super::Vector3View<'_> {
+    let submsg = unsafe {
+      self.inner.ptr().get_message_at_index(3)
+    };
+    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
+    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
+  }
+  pub fn position_mut(&mut self) -> super::Vector3Mut<'_> {
+     let ptr = unsafe {
+       self.inner.ptr_mut().get_or_create_mutable_message_at_index(
+         3, self.arena()
+       ).unwrap()
+     };
+     super::Vector3Mut::from_parent(
+       ::protobuf::__internal::Private,
+       self.as_message_mut_inner(::protobuf::__internal::Private),
+       ptr.raw())
+  }
+  pub fn set_position(&mut self,
+    val: impl ::protobuf::IntoProxied<super::Vector3>) {
+
+    // The message and arena are dropped after the setter. The
+    // memory remains allocated as we fuse the arena with the
+    // parent message's arena.
+    let mut child = val.into_proxied(::protobuf::__internal::Private);
+    self.inner
+      .arena()
+      .fuse(::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut child, ::protobuf::__internal::Private));
+
+    let child_ptr = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_ptr_mut(&mut child, ::protobuf::__internal::Private);
+    unsafe {
+      self.inner.ptr_mut().set_base_field_message_at_index(
+        3, child_ptr
+      );
+    }
+  }
+
 }
 
 // SAFETY:
@@ -2827,6 +2899,60 @@ impl LoginResultBody {
     }
   }
 
+  // position: optional message Proto.Vector3
+  pub fn has_position(&self) -> bool {
+    unsafe {
+      self.inner.ptr().has_field_at_index(3)
+    }
+  }
+  pub fn clear_position(&mut self) {
+    unsafe {
+      self.inner.ptr().clear_field_at_index(
+        3
+      );
+    }
+  }
+  pub fn position_opt(&self) -> ::protobuf::Optional<super::Vector3View<'_>> {
+        ::protobuf::Optional::new(self.position(), self.has_position())
+  }
+  pub fn position(&self) -> super::Vector3View<'_> {
+    let submsg = unsafe {
+      self.inner.ptr().get_message_at_index(3)
+    };
+    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
+    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
+  }
+  pub fn position_mut(&mut self) -> super::Vector3Mut<'_> {
+     let ptr = unsafe {
+       self.inner.ptr_mut().get_or_create_mutable_message_at_index(
+         3, self.arena()
+       ).unwrap()
+     };
+     super::Vector3Mut::from_parent(
+       ::protobuf::__internal::Private,
+       self.as_message_mut_inner(::protobuf::__internal::Private),
+       ptr.raw())
+  }
+  pub fn set_position(&mut self,
+    val: impl ::protobuf::IntoProxied<super::Vector3>) {
+
+    // The message and arena are dropped after the setter. The
+    // memory remains allocated as we fuse the arena with the
+    // parent message's arena.
+    let mut child = val.into_proxied(::protobuf::__internal::Private);
+    self.inner
+      .arena()
+      .fuse(::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut child, ::protobuf::__internal::Private));
+
+    let child_ptr = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_ptr_mut(&mut child, ::protobuf::__internal::Private);
+    unsafe {
+      self.inner.ptr_mut().set_base_field_message_at_index(
+        3, child_ptr
+      );
+    }
+  }
+
 }  // impl LoginResultBody
 
 impl ::std::ops::Drop for LoginResultBody {
@@ -2861,11 +2987,12 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginResult
     ONCE_LOCK.get_or_init(|| unsafe {
       super::Proto__LoginResultBody_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$,P/P1X".as_ptr(),
-              7,
+              "$,P/P1X3".as_ptr(),
+              8,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
+        <super::Vector3 as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table(),
       ];
       let subenums = [
       ];
@@ -3105,6 +3232,24 @@ impl<'msg> LoginNotificationBodyView<'msg> {
     unsafe { ::protobuf::ProtoStr::from_utf8_unchecked(str_view.as_ref()) }
   }
 
+  // position: optional message Proto.Vector3
+  pub fn has_position(self) -> bool {
+    unsafe {
+      self.inner.ptr().has_field_at_index(2)
+    }
+  }
+  pub fn position_opt(self) -> ::protobuf::Optional<super::Vector3View<'msg>> {
+        ::protobuf::Optional::new(self.position(), self.has_position())
+  }
+  pub fn position(self) -> super::Vector3View<'msg> {
+    let submsg = unsafe {
+      self.inner.ptr().get_message_at_index(2)
+    };
+    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
+    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
+  }
+
 }
 
 // SAFETY:
@@ -3310,6 +3455,60 @@ impl<'msg> LoginNotificationBodyMut<'msg> {
     }
   }
 
+  // position: optional message Proto.Vector3
+  pub fn has_position(&self) -> bool {
+    unsafe {
+      self.inner.ptr().has_field_at_index(2)
+    }
+  }
+  pub fn clear_position(&mut self) {
+    unsafe {
+      self.inner.ptr().clear_field_at_index(
+        2
+      );
+    }
+  }
+  pub fn position_opt(&self) -> ::protobuf::Optional<super::Vector3View<'_>> {
+        ::protobuf::Optional::new(self.position(), self.has_position())
+  }
+  pub fn position(&self) -> super::Vector3View<'_> {
+    let submsg = unsafe {
+      self.inner.ptr().get_message_at_index(2)
+    };
+    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
+    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
+  }
+  pub fn position_mut(&mut self) -> super::Vector3Mut<'_> {
+     let ptr = unsafe {
+       self.inner.ptr_mut().get_or_create_mutable_message_at_index(
+         2, self.arena()
+       ).unwrap()
+     };
+     super::Vector3Mut::from_parent(
+       ::protobuf::__internal::Private,
+       self.as_message_mut_inner(::protobuf::__internal::Private),
+       ptr.raw())
+  }
+  pub fn set_position(&mut self,
+    val: impl ::protobuf::IntoProxied<super::Vector3>) {
+
+    // The message and arena are dropped after the setter. The
+    // memory remains allocated as we fuse the arena with the
+    // parent message's arena.
+    let mut child = val.into_proxied(::protobuf::__internal::Private);
+    self.inner
+      .arena()
+      .fuse(::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut child, ::protobuf::__internal::Private));
+
+    let child_ptr = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_ptr_mut(&mut child, ::protobuf::__internal::Private);
+    unsafe {
+      self.inner.ptr_mut().set_base_field_message_at_index(
+        2, child_ptr
+      );
+    }
+  }
+
 }
 
 // SAFETY:
@@ -3449,6 +3648,60 @@ impl LoginNotificationBody {
     }
   }
 
+  // position: optional message Proto.Vector3
+  pub fn has_position(&self) -> bool {
+    unsafe {
+      self.inner.ptr().has_field_at_index(2)
+    }
+  }
+  pub fn clear_position(&mut self) {
+    unsafe {
+      self.inner.ptr().clear_field_at_index(
+        2
+      );
+    }
+  }
+  pub fn position_opt(&self) -> ::protobuf::Optional<super::Vector3View<'_>> {
+        ::protobuf::Optional::new(self.position(), self.has_position())
+  }
+  pub fn position(&self) -> super::Vector3View<'_> {
+    let submsg = unsafe {
+      self.inner.ptr().get_message_at_index(2)
+    };
+    let raw = submsg.map(|ptr| ptr.raw()).unwrap_or(::protobuf::__internal::runtime::ScratchSpace::zeroed_block());
+    let inner = unsafe { ::protobuf::__internal::runtime::MessageViewInner::wrap_raw(raw) };
+    super::Vector3View::new(::protobuf::__internal::Private, inner)
+  }
+  pub fn position_mut(&mut self) -> super::Vector3Mut<'_> {
+     let ptr = unsafe {
+       self.inner.ptr_mut().get_or_create_mutable_message_at_index(
+         2, self.arena()
+       ).unwrap()
+     };
+     super::Vector3Mut::from_parent(
+       ::protobuf::__internal::Private,
+       self.as_message_mut_inner(::protobuf::__internal::Private),
+       ptr.raw())
+  }
+  pub fn set_position(&mut self,
+    val: impl ::protobuf::IntoProxied<super::Vector3>) {
+
+    // The message and arena are dropped after the setter. The
+    // memory remains allocated as we fuse the arena with the
+    // parent message's arena.
+    let mut child = val.into_proxied(::protobuf::__internal::Private);
+    self.inner
+      .arena()
+      .fuse(::protobuf::__internal::runtime::UpbGetArena::get_arena(&mut child, ::protobuf::__internal::Private));
+
+    let child_ptr = ::protobuf::__internal::runtime::UpbGetMessagePtrMut::get_ptr_mut(&mut child, ::protobuf::__internal::Private);
+    unsafe {
+      self.inner.ptr_mut().set_base_field_message_at_index(
+        2, child_ptr
+      );
+    }
+  }
+
 }  // impl LoginNotificationBody
 
 impl ::std::ops::Drop for LoginNotificationBody {
@@ -3483,11 +3736,12 @@ unsafe impl ::protobuf::__internal::runtime::AssociatedMiniTable for LoginNotifi
     ONCE_LOCK.get_or_init(|| unsafe {
       super::Proto__LoginNotificationBody_msg_init.0 =
           ::protobuf::__internal::runtime::upb_MiniTable_Build(
-              "$,P1X".as_ptr(),
-              5,
+              "$,P1X3".as_ptr(),
+              6,
               ::protobuf::__internal::runtime::THREAD_LOCAL_ARENA.with(|a| a.raw()),
               ::std::ptr::null_mut());
       let submessages = [
+        <super::Vector3 as ::protobuf::__internal::runtime::AssociatedMiniTable>::mini_table(),
       ];
       let subenums = [
       ];
