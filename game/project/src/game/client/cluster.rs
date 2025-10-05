@@ -57,20 +57,11 @@ impl Cluster {
                         log::error!("Failed to parse TransformSyncBody: {:?}", parsed.err());
                         continue;
                     }
-                    let player_id = self.player.id();
-                    let timestamp = transform_packet.timestamp();
                     let position = transform_packet.position();
 
 
                     let player_position = self.player.position_mut();
                     *player_position = Point3::new(position.x(), position.y(), position.z());
-
-                    self.command_buffers
-                        .push(Box::new(TransformSyncCommand::new(
-                            player_id,
-                            timestamp,
-                            *player_position,
-                        )));
                 }
                 crate::proto::packet::CategoryOneof::TextMessageType(
                     crate::proto::TextMessageType::Messagechatsend,
@@ -133,6 +124,7 @@ impl Cluster {
         payload.set_id(self.player.id());
         payload.set_isSuccessed(true);
         payload.set_username(self.name.clone());
+        payload.set_position(proto::Vector3::new());
         notify_packet.set_payload(payload.serialize().unwrap()); // 中身
         self.tcp.stack_packet(notify_packet);
     }
@@ -143,5 +135,9 @@ impl Cluster {
 
     pub fn player_name(&self) -> &String {
         &self.name
+    }
+
+    pub fn player(&self) -> &Player {
+        &self.player
     }
 }

@@ -10,10 +10,11 @@ use nalgebra::Point3;
 use super::client::TcpClient;
 use super::zone_request_chash::ZoneRequestChash;
 use crate::contents::containts_director::ContaintsDirector;
+use crate::entity::entity::Entity;
 use crate::entity::player::Player;
 
 use crate::game::client::{self, CommandTrait};
-use crate::proto::*;
+use crate::proto::{self, *};
 use protobuf::*;
 
 pub struct Zone {
@@ -66,9 +67,13 @@ impl Zone {
         // コマンド処理
         self.execute_client_commands();
 
+        // 位置同期
+        self.sync_entity_transform_all();
+
         // クライアント追加/削除処理
         self.add_client_accepted();
         self.remove_client_chashed();
+
         // チャッシュクリア
         self.zone_request_chash.clear();
 
@@ -131,7 +136,7 @@ impl Zone {
     // プレイヤー追加
     fn add_client_accepted(&mut self) {
         let mut login_chash = self.zone_request_chash.get_login_chash_take();
-        login_chash.iter_mut().for_each(|login| {
+        login_chash.into_iter().for_each(|mut login| {
             // 接続完了通知
             login.client_cluster.on_accepted();
             // 接続したクライアントに既存プレイヤーの情報を送信
@@ -141,12 +146,17 @@ impl Zone {
                 let mut body = LoginNotificationBody::new();
                 body.set_id(*id);
                 body.set_username(cluster.player_name().clone());
+                let mut position = proto::Vector3::new();
+                let cluster_position = cluster.player().position();
+                position.set_x(cluster_position.x);
+                position.set_y(cluster_position.y);
+                position.set_z(cluster_position.z);
+                body.set_position(position);
                 packet.set_payload(body.serialize().unwrap());
                 // パケットを積む
                 login.client_cluster.stack_packet(packet);
             });
-        });
-        login_chash.into_iter().for_each(|mut login| {
+            // プレイヤーリストに追加
             self.players.insert(login.id, login.client_cluster);
         });
     }
@@ -248,14 +258,25 @@ impl Zone {
         });
     }
 
+    pub fn sync_entity_transform_all(&mut self) {
+        let timestamp = chrono::Utc::now().timestamp_micros() as u64;
+        let transforms = self
+            .players
+            .iter()
+            .map(|(id, cluster)| {
+                let position = cluster.player().position();
+                (*id, timestamp, *position)
+            })
+            .collect::<Vec<_>>();
+        transforms
+            .into_iter()
+            .for_each(|(entity_id, timestamp, position)| {
+                self.sync_entity_transform(entity_id, timestamp, position);
+            });
+    }
+
     // 位置の同期をクライアントに通知
     pub fn sync_entity_transform(&mut self, entity_id: u64, timestamp: u64, position: Point3<f32>) {
-        log::info!(
-            "Syncing position for entity | {} | {:?} | {:?}",
-            entity_id,
-            timestamp,
-            position
-        );
         let mut packet = crate::proto::Packet::new();
         packet.set_syncPacketType(crate::proto::SyncPacketType::Synctransform);
         let mut body = crate::proto::TransformSyncBody::new();

@@ -19,25 +19,30 @@ pub fn init() {
         panic!("Failed to create log file: {}", log_file.err().unwrap())
     }
 
+    let config = simplelog::ConfigBuilder::new()
+        .set_time_format_custom(format_description!(
+            "[year]-[month]-[day]-[hour]:[minute]:[second]"
+        ))
+        .set_level_padding(LevelPadding::Off)
+        .set_thread_mode(ThreadLogMode::Both)
+        .build();
+
     // ロガーの初期化
+    let (terminal_level, file_level) = if cfg!(debug_assertions) {
+        (LevelFilter::Debug, LevelFilter::Debug)
+    } else {
+        (LevelFilter::Warn, LevelFilter::Info)
+    };
+
     simplelog::CombinedLogger::init(vec![
-        // 標準出力にはWarn以上を表示する。
         simplelog::TermLogger::new(
-            simplelog::LevelFilter::Info,
-            simplelog::Config::default(),
+            terminal_level,
+            config.clone(),
             simplelog::TerminalMode::Mixed,
             simplelog::ColorChoice::Auto,
         ),
         // ファイルsimplelog.logにはInfo以上を表示する。
-        simplelog::WriteLogger::new(
-            simplelog::LevelFilter::Info,
-            simplelog::ConfigBuilder::new()
-                .set_time_format_custom(format_description!("[year]-[month]-[day]-[hour]:[minute]:[second]"))
-                .set_level_padding(LevelPadding::Off)
-                .set_thread_mode(ThreadLogMode::Both)
-                .build(),
-            log_file.unwrap(),
-        ),
+        simplelog::WriteLogger::new(file_level, config.clone(), log_file.unwrap()),
     ])
     .unwrap();
 
